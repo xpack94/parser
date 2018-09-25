@@ -26,6 +26,7 @@ public class FileUploaderInput extends JTextField{
 		this.features.gridwidth=2;
 		this.features.ipady=10;
 		this.features.fill=Features.HORIZONTAL;	
+		this.features.weightx=0.5;
 	}
 	
 	public Features getComponentFeatures(){

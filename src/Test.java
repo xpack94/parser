@@ -1,6 +1,7 @@
 import java.awt.*;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
  
 public class Test {
     final static boolean shouldFill = true;
@@ -31,13 +32,16 @@ public class Test {
     pane.add(fileInputField, c);
     
     button = new JButton("Button 3");
+    button.setBorder(new TitledBorder("Sous-classes"));
     c.ipady=0;
     c.gridx = 0;
     c.gridy = 1;
-    c.gridwidth=1;
+    c.gridwidth=2;
     c.gridheight=3;
     c.fill=GridBagConstraints.VERTICAL;
-    c.insets=new Insets(0, 15, 0, 15);
+    c.anchor=GridBagConstraints.LINE_START;
+    button.setPreferredSize(new Dimension(100,70));
+    c.insets=new Insets(0, 0, 0, 15);
     pane.add(button, c);
     
     Panel p = new Panel(new BorderLayout());

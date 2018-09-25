@@ -1,6 +1,7 @@
-package Controler;
+package controller;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,15 +10,20 @@ import javax.swing.JPanel;
 
 import Common.Features;
 
-public class PanelContoler extends JPanel {
+public class PanelContoller extends JPanel {
 
+	private Features features;
 	
-	public PanelContoler() {
+	public PanelContoller() {
 		super();
 	}
 	
-	public PanelContoler(GridBagLayout layout) {
+	public PanelContoller(GridBagLayout layout) {
 		super(layout);
+	}
+	public PanelContoller(Features features){
+		this.features=features;
+		this.setPreferredSize(new Dimension(400,400));
 	}
 	
 	
@@ -34,5 +40,13 @@ public class PanelContoler extends JPanel {
 		}
 		
 	  }
+	
+	public Features getFeatures() {
+		return this.features;
+	}
+	public void setFeatures(Features features) {
+		this.features = features;
+	}
+	
 	
 }
