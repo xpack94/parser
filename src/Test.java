@@ -38,8 +38,9 @@ public class Test {
     c.gridy = 1;
     c.gridwidth=2;
     c.gridheight=3;
-    c.fill=GridBagConstraints.VERTICAL;
+    c.fill=GridBagConstraints.HORIZONTAL;
     c.anchor=GridBagConstraints.LINE_START;
+    c.weighty=1;
     button.setPreferredSize(new Dimension(100,70));
     c.insets=new Insets(0, 0, 0, 15);
     pane.add(button, c);
@@ -59,6 +60,9 @@ public class Test {
     c.gridheight=1;
     c.fill=GridBagConstraints.RELATIVE;
     c.insets=new Insets(0, 0, 0, 15);
+    c.ipadx=0;
+    c.ipady=0;
+   
     pane.add(p,c);
     
     Panel p1 = new Panel(new BorderLayout());
@@ -75,6 +79,8 @@ public class Test {
     c.gridwidth=1;
     c.gridheight=1;
     c.fill=GridBagConstraints.RELATIVE;
+    c.weightx=0;
+    c.weighty=0;
     c.insets=new Insets(0, 0, 0, 0);
     pane.add(p1, c);
     

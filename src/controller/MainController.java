@@ -1,6 +1,7 @@
 package controller;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -28,48 +29,74 @@ public class MainController {
 		 listModel.addElement("participant");
 		 listModel.addElement("entraineur");
 		 listModel.addElement("stade");
-		 //creation d'un sub panel a l'interieur du grand panel 
-		 //se panel contiendera les 4 compansantes au milieu 
-		 PanelContoller innerPanel = new PanelContoller(new GridBagLayout());
+		 ClassesList classes=new ClassesList(listModel, "classes");
 		 
-		 //adding the features of all four component that are inside the inner panl
-		 Features componentOne =new Features(0,0,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
-				 new Insets(0, 0, 50, 15),500,100,0,0);
 		 
-		 Features componentTwo =new Features(1,0,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
-				 new Insets(0, 0, 50, 0),500,100,0,0);
+		 //ajout des caracteristiques de chaque composante ....
 		 
-		 Features componentThree =new Features(0,1,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
-				 new Insets(0, 0, 0, 15),500,100,0,0);
+		 //caracteristiques du button 
+		 Features fileUploaderButtonFeatures=new Features(0,0,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(0,0,0,0),0,0,0,0);
+		 
+		 //caracteristiques de l'input
+		 Features fileUploaderInputFeatures=new Features(1,0,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
+				 new Insets(0,0,0,0),0,10,1,0);
+		 
+		 //caracteristiques du container des classes
+		 Features classListFeatures=new Features(0,1,2,3,GridBagConstraints.VERTICAL,GridBagConstraints.CENTER,
+				 new Insets(0,0,0,15),-205,0,0,0);
+		 
+		 //caracteristiques des quatre scrollPanel su milieu
+		 
+		 Features componentOne =new Features(2,1,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(15, 0, 15, 15),0,0,0,0);
+		 
+		 Features componentTwo =new Features(3,1,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(15, 0, 15, 0),0,0,0,0);
+		 
+		 
+		 Features componentThree =new Features(2,2,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(0, 0, 15, 15),0,0,0,0);
 
-		 Features componentFour =new Features(1,1,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
-				 new Insets(0, 0, 0, 0),500,100,1,0);
+		 Features componentFour =new Features(3,2,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(0, 0, 15, 0),0,0,0,0);
 		 
-		 //instanciating the four components
-		 ScrollPane scrollPaneOne=new ScrollPane("Attributs",componentOne);
+		 //l'ajout des caracteristiques de chaque composante
+		 fileUploaderButton.setComponentFeatures(fileUploaderButtonFeatures);
+		 fileUploaderInput.setComponentFeatures(fileUploaderInputFeatures);
+		 classes.setFeatures(classListFeatures);
+		 
+		 //instanciation des quatre composante du milieu 
+		 ScrollPane scrollPaneOne=new ScrollPane("Attributs",componentOne);	
 		 ScrollPane scrollPaneTwo=new ScrollPane("Methodes",componentTwo);
 		 ScrollPane scrollPaneThree=new ScrollPane("Sous Classes",componentThree);
 		 ScrollPane scrollPaneFour=new ScrollPane("Associations/Aggregations",componentFour);
 		 
-		 //adding the components to the inner panel
-		 innerPanel.addComponent(scrollPaneOne,scrollPaneOne.getFeatures() );
-		 innerPanel.addComponent(scrollPaneTwo,scrollPaneTwo.getFeatures() );
-		 innerPanel.addComponent(scrollPaneThree,scrollPaneThree.getFeatures() );
-		 innerPanel.addComponent(scrollPaneFour,scrollPaneFour.getFeatures() );
+		 //initialiser les dimentions de chaque composante
+		 fileUploaderInput.setPreferredSize(new Dimension(250,15));
+		 scrollPaneOne.setPreferredSize(new Dimension(150,150));
+		 scrollPaneTwo.setPreferredSize(new Dimension(150,150));
+		 scrollPaneThree.setPreferredSize(new Dimension(150,150));
+		 scrollPaneFour.setPreferredSize(new Dimension(150,150)); 
 		 
-		 //adding innerPanel features
-		 Features innerPanelFeatures =new Features(1,1,2,2,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
-				 new Insets(15, 0, 0, 15),0,0,0,0);
-		 innerPanel.setFeatures(innerPanelFeatures);
+		 
+		 //l'ajout des composante dans le panel
 		
-		 panel.add(innerPanel,innerPanel.getFeatures());
+		 panel.addComponent(scrollPaneOne,scrollPaneOne.getFeatures() );
+		 panel.addComponent(scrollPaneTwo,scrollPaneTwo.getFeatures() );
+		 panel.addComponent(scrollPaneThree,scrollPaneThree.getFeatures() );
+		 panel.addComponent(scrollPaneFour,scrollPaneFour.getFeatures() );
 		 
 		 
-		 ClassesList classes=new ClassesList(listModel, "classes");
+		
+		 
+		 
 		 panel.addComponent(fileUploaderButton, fileUploaderButton.getComponentFeatures());
 		 panel.addComponent(fileUploaderInput, fileUploaderInput.getComponentFeatures());
 		 panel.addComponent(classes, classes.getFeatures());
-		  javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		
+		 
+		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
 	            	JFrame frame=FrameFactory.getFrame();
 	            	frame.add(panel);
