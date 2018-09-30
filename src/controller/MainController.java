@@ -74,7 +74,7 @@ public class MainController {
 		 classes.setFeatures(classListFeatures);
 		 detailsField.setFeatures(DetailsFeatures);
 		 
-		 //instanciation des quatre composante du milieu 
+		 //instanciation des quatres composante du milieu 
 		 ScrollPane scrollPaneOne=new ScrollPane("Attributs",componentOne);	
 		 ScrollPane scrollPaneTwo=new ScrollPane("Methodes",componentTwo);
 		 ScrollPane scrollPaneThree=new ScrollPane("Sous Classes",componentThree);
