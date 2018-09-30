@@ -1,16 +1,19 @@
 package Common;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ClassDao {
 
 	private String name;
-	private ArrayList<AttributeDao> attributes;
-	private ArrayList<MethodeDao> methodes;
+	private List<AttributeDao> attributes;
+	private List<MethodeDao> methodes;
+	private List<ClassDao> subClasses;
 	
-	public ClassDao(String name,ArrayList<AttributeDao>attributes,ArrayList<MethodeDao> methodes){
-		this.attributes=attributes;
-		this.methodes=methodes;
+	public ClassDao(String name,List<AttributeDao> classAttributes,List<MethodeDao> classMethodes){
+		this.attributes=classAttributes;
+		this.methodes=classMethodes;
+		this.subClasses=new ArrayList<ClassDao>();
 		this.name=name;
 	}
 
@@ -22,20 +25,32 @@ public class ClassDao {
 		this.name = name;
 	}
 
-	public ArrayList<AttributeDao> getAttributes() {
+	public List<AttributeDao> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(ArrayList<AttributeDao> attributes) {
+	public void setAttributes(List<AttributeDao> attributes) {
 		this.attributes = attributes;
 	}
 
-	public ArrayList<MethodeDao> getMethodes() {
+	public List<MethodeDao> getMethodes() {
 		return methodes;
 	}
 
-	public void setMethodes(ArrayList<MethodeDao> methodes) {
+	public void setMethodes(List<MethodeDao> methodes) {
 		this.methodes = methodes;
+	}
+
+	public List<ClassDao> getSubClasses() {
+		return subClasses;
+	}
+
+	public void setSubClasses(List<ClassDao> subClasses) {
+		this.subClasses = subClasses;
+	}
+	
+	public void setSubClassToParent(ClassDao subClass){
+		this.subClasses.add(subClass);
 	}
 	
 	

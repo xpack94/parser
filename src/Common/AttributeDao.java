@@ -25,6 +25,12 @@ public class AttributeDao {
 	public void setAttributeType(String attributeType) {
 		this.attributeType = attributeType;
 	}
+
+	@Override
+	public String toString() {
+		return "AttributeDao [attributeName=" + attributeName
+				+ ", attributeType=" + attributeType + "]";
+	}
 	
 	
 }

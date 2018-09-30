@@ -68,6 +68,7 @@ public class UmlParser {
 				this.handleClass(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("GENERALIZATION")){
+				this.handleGeneralizations(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("RELATION")){
 				break;
@@ -80,11 +81,14 @@ public class UmlParser {
 	private void handleClass(List<String> classDefinition){
 		//on se debarasse de tout les espaces
 		classDefinition=this.removeWhiteSpaces(classDefinition);
+		String ClassName="";
 		List<String> attributes=new ArrayList<String>();
 		List<String> methodes=new ArrayList<String>();
 		//maintenant on dispose d'un array list contenant la description d'une class
 		for(int i=0;i<classDefinition.size();i++){
-			if(classDefinition.get(i).contains("ATTRIBUTES")){
+			if(classDefinition.get(i).contains("CLASS")){
+				ClassName=classDefinition.get(i).substring(i+6,classDefinition.get(i).length());
+			}else if(classDefinition.get(i).contains("ATTRIBUTES")){
 				int methodesIndex=classDefinition.indexOf("OPERATIONS");
 				attributes=classDefinition.subList(i+1, methodesIndex);
 			}else if(classDefinition.get(i).contains("OPERATIONS")){
@@ -95,9 +99,12 @@ public class UmlParser {
 		
 		//maintenant puisque on a extrait les attributs et les methode de la class
 		//on peut les populer dans leurs classes respectives
-		this.populateAttributes(attributes);
+		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
+		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
 		
-			
+		//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
+		DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes)); 
+		
 		}
 	
 	//methode qui cree une list de type AttributeDao et qui le popule avec les attribute données 
@@ -111,10 +118,58 @@ public class UmlParser {
 				String attributeType=attribute.substring(clIndex+1,attribute.length());
 				attributesList.add(new AttributeDao(attributeName, attributeType));
 			}
-			
 		}
 		
 		return attributesList;
+		
+	}
+	
+	private List<MethodeDao> populateMethodes(List<String> methodes){
+		List<MethodeDao> methodesList=new ArrayList<MethodeDao>();
+		if(methodes.size()>0){
+			for(String methode:methodes){
+				int clIndex=methode.lastIndexOf(":");
+				int parametersBegIndex=methode.indexOf("(");
+				int parametersEndIndex=methode.indexOf(")");
+				String methodeName=methode.substring(0,parametersBegIndex);
+				String methodeType=methode.substring(clIndex+1,methode.length());
+				String parametersDescription=methode.substring(parametersBegIndex+1,parametersEndIndex);
+				List<AttributeDao> methodeParameters=new ArrayList<AttributeDao>();
+				if(parametersDescription.length()>0){
+					List<String> parameters=Arrays.asList(parametersDescription.trim().split(","));
+				    methodeParameters=this.populateAttributes(parameters);
+				}
+				methodesList.add(new MethodeDao(methodeName, (ArrayList<AttributeDao>) methodeParameters, methodeType));
+			}
+		}
+		
+		return methodesList;
+		
+			
+	}
+	//methode qui s'occupe de la gestion des super class
+	//fait l'ajout a la liste des sous classe du parent 
+	private void handleGeneralizations(List<String> generalizations){
+		generalizations=this.removeWhiteSpaces(generalizations);
+		String generalizationClassName="";
+		
+		for(String generalizationContent:generalizations){
+			if(generalizationContent.contains("GENERALIZATION")){
+				int generalizationNameIndex=generalizationContent.indexOf("GENERALIZATION");
+				generalizationClassName= generalizationContent.substring(generalizationNameIndex+15,generalizationContent.length());
+			}else if(generalizationContent.contains("SUBCLASSES")){
+				int subClassesIndex=generalizationContent.indexOf("SUBCLASSES");
+				List<String> subClassesContainer=Arrays.asList(
+						generalizationContent.substring(subClassesIndex+11,generalizationContent.length()).split(","));
+				//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
+				for (String sub:subClassesContainer){
+					ClassDao parentClass=DataApi.classes.get(generalizationClassName);
+					parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
+				}
+				
+				
+			}
+		}
 		
 	}
 	
