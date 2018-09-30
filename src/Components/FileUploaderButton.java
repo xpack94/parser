@@ -8,7 +8,6 @@ import java.util.Observer;
 
 import javax.swing.JButton;
 
-import com.sun.xml.internal.bind.v2.util.FatalAdapter;
 
 import ActionListeners.UploadFileListener;
 import Common.Features;
