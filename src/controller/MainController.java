@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 
 import Common.Features;
 import Components.ClassesList;
+import Components.DetailsTextField;
 import Components.FileUploaderButton;
 import Components.FileUploaderInput;
 import Components.ScrollPane;
@@ -23,6 +24,7 @@ public class MainController {
 		 final PanelContoller panel=new PanelContoller(new GridBagLayout());
 		 FileUploaderButton fileUploaderButton= new FileUploaderButton();
 		 FileUploaderInput fileUploaderInput = new FileUploaderInput("test");
+		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
 		 listModel.addElement("joueur");
 		 listModel.addElement("equipe");
@@ -61,10 +63,16 @@ public class MainController {
 		 Features componentFour =new Features(3,2,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
 				 new Insets(0, 0, 15, 0),0,0,0,0);
 		 
+		 //caracterisriques du textField  des details
+		 Features DetailsFeatures =new Features(2,3,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
+				 new Insets(0, 0, 15, 0),0,0,1,0);
+		 
+		 
 		 //l'ajout des caracteristiques de chaque composante
 		 fileUploaderButton.setComponentFeatures(fileUploaderButtonFeatures);
 		 fileUploaderInput.setComponentFeatures(fileUploaderInputFeatures);
 		 classes.setFeatures(classListFeatures);
+		 detailsField.setFeatures(DetailsFeatures);
 		 
 		 //instanciation des quatre composante du milieu 
 		 ScrollPane scrollPaneOne=new ScrollPane("Attributs",componentOne);	
@@ -78,23 +86,17 @@ public class MainController {
 		 scrollPaneTwo.setPreferredSize(new Dimension(150,150));
 		 scrollPaneThree.setPreferredSize(new Dimension(150,150));
 		 scrollPaneFour.setPreferredSize(new Dimension(150,150)); 
+		 detailsField.setPreferredSize(new Dimension(300,150));
 		 
-		 
-		 //l'ajout des composante dans le panel
-		
+		 //l'ajout des composatne au panel
+		 panel.addComponent(fileUploaderButton, fileUploaderButton.getComponentFeatures());
+		 panel.addComponent(fileUploaderInput, fileUploaderInput.getComponentFeatures());
+		 panel.addComponent(classes, classes.getFeatures());
 		 panel.addComponent(scrollPaneOne,scrollPaneOne.getFeatures() );
 		 panel.addComponent(scrollPaneTwo,scrollPaneTwo.getFeatures() );
 		 panel.addComponent(scrollPaneThree,scrollPaneThree.getFeatures() );
 		 panel.addComponent(scrollPaneFour,scrollPaneFour.getFeatures() );
-		 
-		 
-		
-		 
-		 
-		 panel.addComponent(fileUploaderButton, fileUploaderButton.getComponentFeatures());
-		 panel.addComponent(fileUploaderInput, fileUploaderInput.getComponentFeatures());
-		 panel.addComponent(classes, classes.getFeatures());
-		
+		 panel.addComponent(detailsField, detailsField.getFeatures());
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
