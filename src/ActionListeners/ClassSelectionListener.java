@@ -20,6 +20,7 @@ public class ClassSelectionListener implements ListSelectionListener {
             ClassesList source = (ClassesList)e.getSource();
             String selected = source.getSelectedValue().toString();
             this.classesContainer.updateChosenClass(selected);
+            
         }
 		
 	}

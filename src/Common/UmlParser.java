@@ -139,7 +139,7 @@ public class UmlParser {
 				int parametersBegIndex=methode.indexOf("(");
 				int parametersEndIndex=methode.indexOf(")");
 				String methodeName=methode.substring(0,parametersBegIndex);
-				String methodeType=methode.substring(clIndex+1,methode.length());
+				String methodeType=methode.substring(clIndex+1,methode.length()).replace(",", ""); 
 				String parametersDescription=methode.substring(parametersBegIndex+1,parametersEndIndex);
 				List<AttributeDao> methodeParameters=new ArrayList<AttributeDao>();
 				if(parametersDescription.length()>0){

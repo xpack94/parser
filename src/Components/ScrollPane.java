@@ -12,8 +12,10 @@ import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
 import Notifiers.AttributesNotifier;
+import Notifiers.MethodeNotifier;
 import Common.AttributeDao;
 import Common.Features;
+import Common.MethodeDao;
 import Notifiers.AttributesNotifier;
 
 public class ScrollPane extends JScrollPane implements Observer {
@@ -54,6 +56,8 @@ public class ScrollPane extends JScrollPane implements Observer {
 	public void update(Observable o, Object arg) {
 		if(this.getBorderTitle().equals("Attributs") ){
 			this.updateAttributes(o);
+		}else if(this.getBorderTitle().equals("Methodes")){
+			this.updateMethodes(o);
 		}
 		
 	}
@@ -67,6 +71,23 @@ public class ScrollPane extends JScrollPane implements Observer {
 			textArea.append( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
 		}
 	}
+	private  void updateMethodes(Observable o){
+		JViewport viewport = this.getViewport(); 
+		JTextArea textArea= (JTextArea)viewport.getView();
+		textArea.setText("");
+		if(((MethodeNotifier) o).getMethodes().size()==0){
+			textArea.append("aucune Methode trouvée");
+		}else{
+			for(MethodeDao methode:((MethodeNotifier) o).getMethodes()){
+				textArea.append(methode.getReturnType()+" "+methode.getMethodeName()+"("+
+						")"+"\r\n");
+			}
+		}
+		
+		
+	}
+	
+	
 	public Features getFeatures() {
 		return this.features;
 	}
