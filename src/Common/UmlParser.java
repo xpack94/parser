@@ -198,6 +198,9 @@ public class UmlParser {
 					relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
 					//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
 					DataApi.relations.put(relationName, relationDescription);
+					//ajout de la relation dans la classe qui fait partie de la relation
+					ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
+					relatedClass.addRelationToRelations(relationDescription);
 				}
 				
 			}

@@ -1,11 +1,14 @@
 package Components;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -14,11 +17,13 @@ import javax.swing.border.TitledBorder;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
 import Common.ClassDao;
 import Common.Features;
 import Common.MethodeDao;
+import Common.RelationDao;
 import Notifiers.AttributesNotifier;
 
 public class ScrollPane extends JScrollPane implements Observer {
@@ -30,7 +35,6 @@ public class ScrollPane extends JScrollPane implements Observer {
 	//prend en parametre une classe observée 
 	public ScrollPane(String borderTitle,Features features){
 			super();
-			this.getViewport().add(new JTextArea());
 			this.borderTitle=borderTitle;
 			this.features=features;
 			this.setBorder(new TitledBorder(this.borderTitle));
@@ -63,6 +67,8 @@ public class ScrollPane extends JScrollPane implements Observer {
 			this.updateMethodes(o);
 		}else if(this.getBorderTitle().equals("Sous Classes")){
 			this.updateSubClasses(o);
+		}else if(this.getBorderTitle().equals("Associations/Aggregations")){
+			this.updateRelations(o);
 		}
 		
 	}
@@ -85,7 +91,7 @@ public class ScrollPane extends JScrollPane implements Observer {
 		}else{
 			for(MethodeDao methode:((MethodeNotifier) o).getMethodes()){
 				textArea.append(methode.getReturnType()+" "+methode.getMethodeName()+"("+
-						")"+"\r\n");
+					methode.parametersToString()+")"+"\r\n");
 			}
 		}
 		
@@ -104,7 +110,22 @@ public class ScrollPane extends JScrollPane implements Observer {
 		}
 	}
 	
+	private void updateRelations(Observable o){
+		RelationsNotifier classToBeAdded=(RelationsNotifier)o ;
+		JViewport viewport = this.getViewport(); 
+		JList<String> relationsList= (JList<String>)viewport.getView();
+		//supprimer tout les element avant d'afficher les nouveaux 
+		((DefaultListModel)relationsList.getModel()).removeAllElements();
+		for(RelationDao relation:((RelationsNotifier)o).getRelations()){
+			((DefaultListModel)relationsList.getModel()).addElement(
+				relation.getRelationName());
+		}
+		
+	}
 	
+	public void setComponentInScrollPane(Component c){
+		this.getViewport().add(c);
+	}
 	public Features getFeatures() {
 		return this.features;
 	}

@@ -39,6 +39,18 @@ public class MethodeDao {
 	public void setReturnType(String returnType) {
 		this.returnType = returnType;
 	}
-	
+	//methode qui retourne les types des parametres sous forme de String
+	public String parametersToString(){
+		String parametersToString="";
+		for(AttributeDao parameter:this.parameters){
+			if(!parametersToString.equals("")){
+				parametersToString+=","+parameter.getAttributeType();
+			}else{
+				parametersToString+=parameter.getAttributeType();
+			}
+			
+		}
+		return parametersToString;
+	}
 	
 }

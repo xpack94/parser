@@ -8,6 +8,8 @@ import java.awt.Insets;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JTextArea;
 
 import Common.Features;
 import Components.ClassesList;
@@ -18,6 +20,7 @@ import Components.ScrollPane;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
 
 public class MainController {
@@ -79,6 +82,13 @@ public class MainController {
 		 ScrollPane scrollPaneThree=new ScrollPane("Sous Classes",componentThree);
 		 ScrollPane scrollPaneFour=new ScrollPane("Associations/Aggregations",componentFour);
 		 
+		 
+		 //ajout de composantes dans chaque scrollPane
+		 scrollPaneOne.setComponentInScrollPane(new JTextArea());
+		 scrollPaneTwo.setComponentInScrollPane(new JTextArea());
+		 scrollPaneThree.setComponentInScrollPane(new JTextArea());
+		 scrollPaneFour.setComponentInScrollPane(new JList<String>(new DefaultListModel()));
+		 
 		 //initialiser les dimentions de chaque composante
 		 fileUploaderInput.setPreferredSize(new Dimension(250,15));
 		 scrollPaneOne.setPreferredSize(new Dimension(150,150));
@@ -87,7 +97,7 @@ public class MainController {
 		 scrollPaneFour.setPreferredSize(new Dimension(150,150)); 
 		 detailsField.setPreferredSize(new Dimension(300,150));
 		 
-		 //l'ajout des composatne au panel
+		 //l'ajout des composantes au panel
 		 panel.addComponent(fileUploaderButton, fileUploaderButton.getComponentFeatures());
 		 panel.addComponent(fileUploaderInput, fileUploaderInput.getComponentFeatures());
 		 panel.addComponent(classes, classes.getFeatures());
@@ -102,6 +112,7 @@ public class MainController {
 		 AttributesNotifier attributesNotifier=new AttributesNotifier();
 		 MethodeNotifier methodesNotifier=new MethodeNotifier();
 		 SubClassesNotifier subClassesNotifier=new SubClassesNotifier();
+		 RelationsNotifier relationsNotifier=new RelationsNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
@@ -113,6 +124,8 @@ public class MainController {
 		 methodesNotifier.addObserver(scrollPaneTwo);
 		 classes.setSubClassNotifier(subClassesNotifier);
 		 subClassesNotifier.addObserver(scrollPaneThree);
+		 classes.setRelationsNotifier(relationsNotifier);
+		 relationsNotifier.addObserver(scrollPaneFour);
 		 
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {

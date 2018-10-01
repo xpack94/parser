@@ -54,7 +54,17 @@ public class ClassDao {
 	public void setSubClassToParent(ClassDao subClass){
 		this.subClasses.add(subClass);
 	}
+
+	public List<RelationDao> getRelations() {
+		return relations;
+	}
+
+	public void setRelations(List<RelationDao> relations) {
+		this.relations = relations;
+	}
 	
-	
+	public void addRelationToRelations(RelationDao relation){
+		this.relations.add(relation);
+	}
 	
 }

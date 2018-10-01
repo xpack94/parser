@@ -18,9 +18,11 @@ import Common.ClassDao;
 import Common.DataApi;
 import Common.Features;
 import Common.MethodeDao;
+import Common.RelationDao;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
 import java.util.List;
@@ -37,6 +39,7 @@ public class ClassesList extends JList implements Observer{
 	private AttributesNotifier attributesNotifier;
 	private MethodeNotifier methodesNotifier;
 	private SubClassesNotifier subClassNotifier;
+	private RelationsNotifier relationsNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
 	
 	
@@ -113,6 +116,7 @@ public class ClassesList extends JList implements Observer{
 		List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
 		this.methodesNotifier.setMethodes(methodesOfClass);
 		this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
+		this.relationsNotifier.setRelations(chosenClass.getRelations());
 		
 		
 	}
@@ -144,6 +148,13 @@ public class ClassesList extends JList implements Observer{
 	public void setSubClassNotifier(SubClassesNotifier subClassNotifier) {
 		this.subClassNotifier = subClassNotifier;
 	}
+	public RelationsNotifier getRelationsNotifier() {
+		return relationsNotifier;
+	}
+	public void setRelationsNotifier(RelationsNotifier relationsNotifier) {
+		this.relationsNotifier = relationsNotifier;
+	}
+	
 	
 	
 	
