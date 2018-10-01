@@ -12,8 +12,11 @@ import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
 import Notifiers.AttributesNotifier;
+import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
+import Common.ClassDao;
 import Common.Features;
 import Common.MethodeDao;
 import Notifiers.AttributesNotifier;
@@ -58,6 +61,8 @@ public class ScrollPane extends JScrollPane implements Observer {
 			this.updateAttributes(o);
 		}else if(this.getBorderTitle().equals("Methodes")){
 			this.updateMethodes(o);
+		}else if(this.getBorderTitle().equals("Sous Classes")){
+			this.updateSubClasses(o);
 		}
 		
 	}
@@ -85,6 +90,18 @@ public class ScrollPane extends JScrollPane implements Observer {
 		}
 		
 		
+	}
+	private void updateSubClasses(Observable o){
+		JViewport viewport = this.getViewport(); 
+		JTextArea textArea= (JTextArea)viewport.getView();
+		textArea.setText("");
+		if(((SubClassesNotifier) o).getSubClasses().size()==0){
+			textArea.append("aucune sous classe");
+		}else{
+			for(ClassDao subClass:((SubClassesNotifier)o).getSubClasses()){
+				textArea.append(subClass.getName()+"\r\n");
+			}
+		}
 	}
 	
 	

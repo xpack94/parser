@@ -21,6 +21,7 @@ import Common.MethodeDao;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class ClassesList extends JList implements Observer{
 	private ClassNotifier classNotifier;
 	private AttributesNotifier attributesNotifier;
 	private MethodeNotifier methodesNotifier;
+	private SubClassesNotifier subClassNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
 	
 	
@@ -104,12 +106,14 @@ public class ClassesList extends JList implements Observer{
 	public void updateChosenClass(String selectedClass){
 		//cette classe est appelé a chauqe fois qu'un element de la liste est choisit
 		this.SelectedClass=selectedClass;
-		//on recupere la definition de la classe choisit et on notifie l'observateur
+		//on recupere la definition de la classe choisit et on notifie les observateurs de chaque composante
 		ClassDao chosenClass=DataApi.classes.get(selectedClass);
 		List<AttributeDao> attributesOfClass=chosenClass.getAttributes();
 		this.attributesNotifier.setAtrributes(attributesOfClass);
 		List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
 		this.methodesNotifier.setMethodes(methodesOfClass);
+		this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
+		
 		
 	}
 	
@@ -134,6 +138,13 @@ public class ClassesList extends JList implements Observer{
 	public void setMethodesNotifier(MethodeNotifier methodesNotifier) {
 		this.methodesNotifier = methodesNotifier;
 	}
+	public SubClassesNotifier getSubClassNotifier() {
+		return subClassNotifier;
+	}
+	public void setSubClassNotifier(SubClassesNotifier subClassNotifier) {
+		this.subClassNotifier = subClassNotifier;
+	}
+	
 	
 	
 	
