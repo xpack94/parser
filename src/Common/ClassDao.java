@@ -9,11 +9,13 @@ public class ClassDao {
 	private List<AttributeDao> attributes;
 	private List<MethodeDao> methodes;
 	private List<ClassDao> subClasses;
+	private List<RelationDao> relations;
 	
 	public ClassDao(String name,List<AttributeDao> classAttributes,List<MethodeDao> classMethodes){
 		this.attributes=classAttributes;
 		this.methodes=classMethodes;
 		this.subClasses=new ArrayList<ClassDao>();
+		this.relations=new ArrayList<RelationDao>();
 		this.name=name;
 	}
 

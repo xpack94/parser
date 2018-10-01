@@ -15,6 +15,7 @@ import Components.DetailsTextField;
 import Components.FileUploaderButton;
 import Components.FileUploaderInput;
 import Components.ScrollPane;
+import Notifiers.ClassNotifier;
 
 public class MainController {
 
@@ -26,11 +27,6 @@ public class MainController {
 		 FileUploaderInput fileUploaderInput = new FileUploaderInput("test");
 		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
-		 listModel.addElement("joueur");
-		 listModel.addElement("equipe");
-		 listModel.addElement("participant");
-		 listModel.addElement("entraineur");
-		 listModel.addElement("stade");
 		 ClassesList classes=new ClassesList(listModel, "classes");
 		 
 		 
@@ -97,6 +93,14 @@ public class MainController {
 		 panel.addComponent(scrollPaneThree,scrollPaneThree.getFeatures() );
 		 panel.addComponent(scrollPaneFour,scrollPaneFour.getFeatures() );
 		 panel.addComponent(detailsField, detailsField.getFeatures());
+		 
+		 //creation des observateurs
+		 ClassNotifier classNotifier=new ClassNotifier();
+		 
+		 //l'ajout des observateurs de chaque composante 
+		 fileUploaderButton.setClassNotifier(classNotifier);
+		 classes.setClassNotifier(classNotifier);
+		 classNotifier.addObserver(classes);
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {

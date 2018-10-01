@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import ActionListeners.UploadFileListener;
 import Common.Features;
 import Common.UmlParser;
+import Notifiers.ClassNotifier;
 
 
 
@@ -20,6 +21,8 @@ public class FileUploaderButton extends JButton implements Observer{
 	//contient toutes les caracteristique de cette composante
 	private Features features=new Features();
 	private static String FILE_TITLE="Charger Fichier";
+	private ClassNotifier classNotifier;
+
 	//le action listener du boutton qui va lui etre reliér
 	private UploadFileListener uploadFileListener=new UploadFileListener(this);
 	private UmlParser umlParser;
@@ -73,16 +76,26 @@ public class FileUploaderButton extends JButton implements Observer{
 		this.umlParser=new UmlParser(readFile);
 		try {
 			String dataToParse= new String(this.umlParser.readFile(), "UTF-8");
-			
+			this.umlParser.setClassNotifier(this.getClassNotifier());
 			//maintenant en parse le fichier lu 
 			this.umlParser.parseFile(dataToParse);
+			
 			
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public ClassNotifier getClassNotifier() {
+		return classNotifier;
+	}
+	public void setClassNotifier(ClassNotifier classNotifier) {
+		this.classNotifier = classNotifier;
+	}
 	public void update(Observable o, Object arg) {
 		
 	}
+	
 }
