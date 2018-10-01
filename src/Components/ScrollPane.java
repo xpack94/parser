@@ -117,7 +117,7 @@ public class ScrollPane extends JScrollPane implements Observer {
 		//supprimer tout les element avant d'afficher les nouveaux 
 		((DefaultListModel)relationsList.getModel()).removeAllElements();
 		for(RelationDao relation:((RelationsNotifier)o).getRelations()){
-			((DefaultListModel)relationsList.getModel()).addElement(
+			((DefaultListModel)relationsList.getModel()).addElement("(R) "+
 				relation.getRelationName());
 		}
 		

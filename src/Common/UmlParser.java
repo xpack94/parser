@@ -78,6 +78,7 @@ public class UmlParser {
 				this.handleRelation(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("AGGREGATION")){
+				this.handleAggregations(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}		
 		}
@@ -205,6 +206,36 @@ public class UmlParser {
 				
 			}
 		}
+		
+	}
+	private void handleAggregations(List<String> aggregations){
+		aggregations=this.removeWhiteSpaces(aggregations);
+		List<RelationType> aggregationRelations=new ArrayList<RelationType>();
+		String aggType="";
+		String aggregationContainerName="",aggregationContainerType="",aggregationPartsName="",aggregationPartsType="";
+		for(String aggregation:aggregations){
+			if(aggregation.contains("CONTAINER")){
+				aggType="CONTAINER";
+			}else if(aggregation.contains("PARTS")){
+				aggType="PARTS";
+			}else if(aggregation.contains("CLASS") && aggType=="CONTAINER"){
+				String aggContainerDesc=aggregation.substring(
+						aggregation.indexOf("CLASS")+6,aggregation.length());
+				 aggregationContainerName=aggContainerDesc.substring(0,aggContainerDesc.indexOf(" "));
+				 aggregationContainerType=aggContainerDesc.substring(aggContainerDesc.indexOf(" ")+1,aggContainerDesc.length());
+			}else if(aggregation.contains("CLASS") && aggType=="PARTS"){
+				String aggPartsDesc=aggregation.substring(
+						aggregation.indexOf("CLASS")+6,aggregation.length());
+				aggregationPartsName=aggPartsDesc.substring(0,aggPartsDesc.indexOf(" "));
+				aggregationPartsType=aggPartsDesc.substring(aggPartsDesc.indexOf(" ")+1,aggPartsDesc.length());
+				ClassDao aggregationPartClass=DataApi.classes.get(aggregationPartsName);
+				aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
+			}
+			
+		}
+		ClassDao container=DataApi.classes.get(aggregationContainerName);
+		AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);
+		DataApi.aggregations.put(container.getName(), aggregation);
 		
 	}
 	
