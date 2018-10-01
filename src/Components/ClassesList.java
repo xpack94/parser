@@ -13,9 +13,14 @@ import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 
+import ActionListeners.ClassSelectionListener;
 import Common.ClassDao;
+import Common.DataApi;
 import Common.Features;
+import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
+import Common.AttributeDao;
+import java.util.List;
 
 public class ClassesList extends JList implements Observer{
 
@@ -24,17 +29,22 @@ public class ClassesList extends JList implements Observer{
 	private final int WIDTH=350;
 	private final int HEIGHT=400;
 	private final int ROW_COUNT=-1;
+	private String SelectedClass="";
 	private ClassNotifier classNotifier;
+	private AttributesNotifier attributesNotifier;
+	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
 	
 	
 	public ClassesList(ListModel data,String borderTitle,Features features){
 		super(data);
 		this.initList(borderTitle);
 		this.features=features;
+		this.addSelectEvent();
 	}
 	public ClassesList(ListModel data,String borderTitle){
 		super(data);
 		this.initList(borderTitle);
+		this.addSelectEvent();
 	}
 	
 	private void initList(String borderTitle){
@@ -88,13 +98,30 @@ public class ClassesList extends JList implements Observer{
 	public void setClassNotifier(ClassNotifier classNotifier) {
 		this.classNotifier = classNotifier;
 	}
+	public void updateChosenClass(String selectedClass){
+		//cette classe est appelé a chauqe fois qu'un element de la liste est choisit
+		this.SelectedClass=selectedClass;
+		//on recupere la definition de la classe choisit et on notifie l'observateur 
+		List<AttributeDao> attributesOfClass=DataApi.classes.get(selectedClass).getAttributes();
+		this.attributesNotifier.setAtrributes(attributesOfClass);
+	}
+	
 	public void update(Observable o, Object arg) {
-		System.out.println("notified "+ ((ClassNotifier)o).getClassContainer().getName());
 		//on met a jours la liste des classes a chaque notification
 		ClassNotifier classToBeAdded=(ClassNotifier)o ;
 		((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
 		
 	}
+	private void addSelectEvent(){
+		this.addListSelectionListener(this.classSelectionListener);
+	}
+	public AttributesNotifier getAttributesNotifier() {
+		return attributesNotifier;
+	}
+	public void setAttributesNotifier(AttributesNotifier attributesNotifier) {
+		this.attributesNotifier = attributesNotifier;
+	}
+	
 	
 	
 	

@@ -15,6 +15,7 @@ import Components.DetailsTextField;
 import Components.FileUploaderButton;
 import Components.FileUploaderInput;
 import Components.ScrollPane;
+import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 
 public class MainController {
@@ -96,11 +97,15 @@ public class MainController {
 		 
 		 //creation des observateurs
 		 ClassNotifier classNotifier=new ClassNotifier();
+		 AttributesNotifier attributesNotifier=new AttributesNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
 		 classes.setClassNotifier(classNotifier);
 		 classNotifier.addObserver(classes);
+		 classes.setAttributesNotifier(attributesNotifier);
+		 attributesNotifier.addObserver(scrollPaneOne);
+		 
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {

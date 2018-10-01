@@ -121,8 +121,8 @@ public class UmlParser {
 			for(String attribute:attributes){
 				//extraction du nom de l'attribut 
 				int clIndex=attribute.indexOf(":");
-				String attributeName=attribute.substring(0,clIndex);
-				String attributeType=attribute.substring(clIndex+1,attribute.length());
+				String attributeName=attribute.substring(0,clIndex).replace(",","");
+				String attributeType=attribute.substring(clIndex+1,attribute.length()).replace(",","");
 				attributesList.add(new AttributeDao(attributeName, attributeType));
 			}
 		}

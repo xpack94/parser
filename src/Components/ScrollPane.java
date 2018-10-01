@@ -7,29 +7,31 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
-
+import Notifiers.AttributesNotifier;
+import Common.AttributeDao;
 import Common.Features;
+import Notifiers.AttributesNotifier;
 
 public class ScrollPane extends JScrollPane implements Observer {
 
 	private String borderTitle;
-	private Object observedClass;
 	private Features features;
 	private final int WIDTH=150;
 	private final int HEIGHT=150;
 	//prend en parametre une classe observée 
 	public ScrollPane(String borderTitle,Features features){
 			super();
+			this.getViewport().add(new JTextArea());
 			this.borderTitle=borderTitle;
 			this.features=features;
 			this.setBorder(new TitledBorder(this.borderTitle));
 			
 	}	
 	
-	public void setObservedClass(Object o){
-		this.observedClass=o;
-	}
 	
 	
 	//fonction decrivant tout les caracteristiques que le composante va avoir
@@ -50,11 +52,21 @@ public class ScrollPane extends JScrollPane implements Observer {
 			
 	//la fonction qui va s'executer a chaque fois que les elements de la classe observée changent 
 	public void update(Observable o, Object arg) {
-		// sera implementer une fois que les classes observées seront ajoutés
+		if(this.getBorderTitle().equals("Attributs") ){
+			this.updateAttributes(o);
+		}
 		
 	}
 	
-	
+	private void updateAttributes(Observable o){
+		// sera implementer une fois que les classes observées seront ajoutés
+		JViewport viewport = this.getViewport(); 
+		JTextArea textArea= (JTextArea)viewport.getView();
+		textArea.setText("");
+		for (AttributeDao attr:((AttributesNotifier) o ).getAtrributes()){
+			textArea.append( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
+		}
+	}
 	public Features getFeatures() {
 		return this.features;
 	}

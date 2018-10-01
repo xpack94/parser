@@ -18,6 +18,7 @@ public class ClassNotifier extends Observable {
 
 	public void setClassContainer(ClassDao classContainer) {
 		this.classContainer = classContainer;
+		//cela va le marqué comme etant changé 
 		this.setChanged();
 		//on notifie l'observateur du changement 
 		this.notifyObservers();
