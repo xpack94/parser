@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -209,11 +211,9 @@ public class UmlParser {
 						ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
 						relatedClass.addRelationToRelations(relationDescription);
 					}else{
-						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'est pas declaré");
+						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas");
 						System.exit(0);
-					}
-					
-					
+					}	
 				}
 				
 			}
@@ -245,7 +245,7 @@ public class UmlParser {
 				if(aggregationPartClass!=null){
 					aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
 				}else{
-					System.out.println("erreur la classe "+aggregationPartsName+" n'existe pas");
+					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas");
 					System.exit(0);
 				}
 				
@@ -262,9 +262,13 @@ public class UmlParser {
 	}
 	
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
+		
 			for(int i=0;i<classDefinition.size();i++){
 				classDefinition.set(i, classDefinition.get(i).trim());
 			}
+			//supprimer les chaines vides
+			classDefinition.removeAll(Collections.singleton(""));
+			System.out.println(classDefinition);
 			return classDefinition;
 	}
 	public void setFile(File file){
