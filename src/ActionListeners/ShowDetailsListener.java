@@ -21,7 +21,7 @@ public class ShowDetailsListener implements ListSelectionListener{
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()){
             JList source = (JList)e.getSource();
-            String selected = source.getSelectedValue().toString();
+            String selected = source.getSelectedValue()!=null?source.getSelectedValue().toString():"";
             this.detailsNotifier.setSelectedValue(selected);
         }
 		

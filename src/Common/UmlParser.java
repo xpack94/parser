@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import controller.FrameFactory;
+
 import Notifiers.ClassNotifier;
 
 
@@ -183,6 +187,7 @@ public class UmlParser {
 	//methode qui prend une description d'une relation et qui popule le hashMap des relations 
 	// ou le nom de la relation est la clé
 	private void handleRelation(List<String> relation){
+		
 		relation=this.removeWhiteSpaces(relation);
 		RelationDao relationDescription = null;
 		String relationName="";
@@ -195,13 +200,19 @@ public class UmlParser {
 				if(relationDescription!=null && relationBetween.size()>1){
 					//l'index 0 represente la class en relation 
 					//l'index 1 represente le type de la relation
-					ClassDao relatedClass=DataApi.classes.get(relationBetween.get(0)); 
-					relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
-					//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
-					DataApi.relations.put(relationName, relationDescription);
-					//ajout de la relation dans la classe qui fait partie de la relation
-					ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
-					relatedClass.addRelationToRelations(relationDescription);
+					ClassDao relatedClass=DataApi.classes.get(relationBetween.get(0));
+					if(relatedClass!=null){
+						relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
+						//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
+						DataApi.relations.put(relationName, relationDescription);
+						//ajout de la relation dans la classe qui fait partie de la relation
+						ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
+						relatedClass.addRelationToRelations(relationDescription);
+					}else{
+						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'est pas declaré");
+						System.exit(0);
+					}
+					
 					
 				}
 				
@@ -231,7 +242,13 @@ public class UmlParser {
 				aggregationPartsName=aggPartsDesc.substring(0,aggPartsDesc.indexOf(" "));
 				aggregationPartsType=aggPartsDesc.substring(aggPartsDesc.indexOf(" ")+1,aggPartsDesc.length());
 				ClassDao aggregationPartClass=DataApi.classes.get(aggregationPartsName);
-				aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
+				if(aggregationPartClass!=null){
+					aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
+				}else{
+					System.out.println("erreur la classe "+aggregationPartsName+" n'existe pas");
+					System.exit(0);
+				}
+				
 			}
 			
 		}
@@ -241,7 +258,7 @@ public class UmlParser {
 		
 		//ajout des details de l'aggregation
 		aggregation.setAggregationDetails(String.join("\r\n", aggregations));
-		System.out.println(String.join("\r\n", aggregations));
+		
 	}
 	
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
