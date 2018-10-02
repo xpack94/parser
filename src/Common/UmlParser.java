@@ -113,7 +113,10 @@ public class UmlParser {
 		//on peut les populer dans leurs classes respectives
 		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
 		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
-		
+		if(DataApi.classes.get(ClassName)!=null){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName);
+			System.exit(0);
+		}
 		//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
 		DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
 		//ajout de la class dans le notificateur
