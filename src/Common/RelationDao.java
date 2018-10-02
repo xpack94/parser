@@ -6,8 +6,8 @@ import java.util.List;
 public class RelationDao {
 
 	private String relationName;
-	List<RelationType> classesInRelation=new ArrayList<RelationType>();
-	
+	private List<RelationType> classesInRelation=new ArrayList<RelationType>();
+	private String relationDetails;
 	
 	public RelationDao(String relationName){
 		this.relationName=relationName;
@@ -34,6 +34,16 @@ public class RelationDao {
 	}
 	public void setClassRelation(RelationType className){
 		this.classesInRelation.add(className);
+	}
+
+
+	public String getRelationDetails() {
+		return relationDetails;
+	}
+
+
+	public void setRelationDetails(String relationDetails) {
+		this.relationDetails = relationDetails;
 	}
 
 

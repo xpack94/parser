@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JTextArea;
 
+import ActionListeners.ShowDetailsListener;
 import Common.Features;
 import Components.ClassesList;
 import Components.DetailsTextField;
@@ -19,6 +20,7 @@ import Components.FileUploaderInput;
 import Components.ScrollPane;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
+import Notifiers.DetailsNotifier;
 import Notifiers.MethodeNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
@@ -87,7 +89,10 @@ public class MainController {
 		 scrollPaneOne.setComponentInScrollPane(new JTextArea());
 		 scrollPaneTwo.setComponentInScrollPane(new JTextArea());
 		 scrollPaneThree.setComponentInScrollPane(new JTextArea());
-		 scrollPaneFour.setComponentInScrollPane(new JList<String>(new DefaultListModel()));
+		 JList<String> innerList=new JList<String>(new DefaultListModel());
+		 ShowDetailsListener showDetailsListener=new ShowDetailsListener();
+		 innerList.addListSelectionListener(showDetailsListener);
+		 scrollPaneFour.setComponentInScrollPane(innerList);
 		 
 		 //initialiser les dimentions de chaque composante
 		 fileUploaderInput.setPreferredSize(new Dimension(250,15));
@@ -113,6 +118,7 @@ public class MainController {
 		 MethodeNotifier methodesNotifier=new MethodeNotifier();
 		 SubClassesNotifier subClassesNotifier=new SubClassesNotifier();
 		 RelationsNotifier relationsNotifier=new RelationsNotifier();
+		 DetailsNotifier detailsNotifier=new DetailsNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
@@ -126,6 +132,8 @@ public class MainController {
 		 subClassesNotifier.addObserver(scrollPaneThree);
 		 classes.setRelationsNotifier(relationsNotifier);
 		 relationsNotifier.addObserver(scrollPaneFour);
+		 showDetailsListener.setDetailsNotifier(detailsNotifier);
+		 detailsNotifier.addObserver(detailsField);
 		 
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {

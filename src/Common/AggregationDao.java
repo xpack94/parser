@@ -7,11 +7,20 @@ public class AggregationDao {
 	private ClassDao aggregationContainer;
 	private String aggregationType;
 	private List<RelationType> aggregationParts=new ArrayList<RelationType>();
+	private String aggregationDetails;
+	
+	
 	
 	public AggregationDao(ClassDao aggregationContainer,String aggregationType,List<RelationType> parts){
 		this.aggregationContainer=aggregationContainer;
 		this.aggregationType=aggregationType;
 		this.aggregationParts=parts;
+	}
+	public AggregationDao(ClassDao aggregationContainer,String aggregationType,List<RelationType> parts,String details){
+		this.aggregationContainer=aggregationContainer;
+		this.aggregationType=aggregationType;
+		this.aggregationParts=parts;
+		this.aggregationDetails=details;
 	}
 
 	public ClassDao getAggregationContainer() {
@@ -37,6 +46,15 @@ public class AggregationDao {
 	public void setAggregationParts(List<RelationType> aggregationParts) {
 		this.aggregationParts = aggregationParts;
 	}
+
+	public String getAggregationDetails() {
+		return aggregationDetails;
+	}
+
+	public void setAggregationDetails(String aggregationDetails) {
+		this.aggregationDetails = aggregationDetails;
+	}
+	
 	
 	
 }

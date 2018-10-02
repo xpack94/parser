@@ -202,11 +202,13 @@ public class UmlParser {
 					//ajout de la relation dans la classe qui fait partie de la relation
 					ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
 					relatedClass.addRelationToRelations(relationDescription);
+					
 				}
 				
 			}
 		}
-		
+		//ajout des details de la relation 
+		relationDescription.setRelationDetails(String.join("\r\n", relation));
 	}
 	private void handleAggregations(List<String> aggregations){
 		aggregations=this.removeWhiteSpaces(aggregations);
@@ -237,6 +239,9 @@ public class UmlParser {
 		AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);
 		DataApi.aggregations.put(container.getName(), aggregation);
 		
+		//ajout des details de l'aggregation
+		aggregation.setAggregationDetails(String.join("\r\n", aggregations));
+		System.out.println(String.join("\r\n", aggregations));
 	}
 	
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
