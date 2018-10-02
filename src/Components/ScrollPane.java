@@ -19,11 +19,14 @@ import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
+import Common.AggregationDao;
 import Common.AttributeDao;
 import Common.ClassDao;
+import Common.DataApi;
 import Common.Features;
 import Common.MethodeDao;
 import Common.RelationDao;
+import Common.RelationType;
 import Notifiers.AttributesNotifier;
 
 public class ScrollPane extends JScrollPane implements Observer {
@@ -69,6 +72,7 @@ public class ScrollPane extends JScrollPane implements Observer {
 			this.updateSubClasses(o);
 		}else if(this.getBorderTitle().equals("Associations/Aggregations")){
 			this.updateRelations(o);
+			this.updateAggregations((ClassDao)arg);
 		}
 		
 	}
@@ -111,7 +115,7 @@ public class ScrollPane extends JScrollPane implements Observer {
 	}
 	
 	private void updateRelations(Observable o){
-		RelationsNotifier classToBeAdded=(RelationsNotifier)o ;
+		
 		JViewport viewport = this.getViewport(); 
 		JList<String> relationsList= (JList<String>)viewport.getView();
 		//supprimer tout les element avant d'afficher les nouveaux 
@@ -120,6 +124,21 @@ public class ScrollPane extends JScrollPane implements Observer {
 			((DefaultListModel)relationsList.getModel()).addElement("(R) "+
 				relation.getRelationName());
 		}
+		
+	}
+	
+	private void updateAggregations(ClassDao selectedClass){
+		AggregationDao aggr=DataApi.aggregations.get(selectedClass.getName());
+		JViewport viewport = this.getViewport(); 
+		JList<String> relationsList= (JList<String>)viewport.getView();
+		if(aggr!=null){
+			for(RelationType parts:aggr.getAggregationParts()){
+				((DefaultListModel)relationsList.getModel()).addElement("(A) "+
+						parts.getRelatedTo().getName());
+			}
+		}
+		
+		
 		
 	}
 	

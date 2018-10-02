@@ -19,6 +19,7 @@ import Common.DataApi;
 import Common.Features;
 import Common.MethodeDao;
 import Common.RelationDao;
+import Notifiers.AggregationsNotifier;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.MethodeNotifier;
@@ -116,9 +117,7 @@ public class ClassesList extends JList implements Observer{
 		List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
 		this.methodesNotifier.setMethodes(methodesOfClass);
 		this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
-		this.relationsNotifier.setRelations(chosenClass.getRelations());
-		
-		
+		this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
 	}
 	
 	public void update(Observable o, Object arg) {
@@ -154,7 +153,7 @@ public class ClassesList extends JList implements Observer{
 	public void setRelationsNotifier(RelationsNotifier relationsNotifier) {
 		this.relationsNotifier = relationsNotifier;
 	}
-	
+
 	
 	
 	
