@@ -21,6 +21,7 @@ import Components.ScrollPane;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
+import Notifiers.InputFileNotifier;
 import Notifiers.MethodeNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
@@ -32,7 +33,7 @@ public class MainController {
 		
 		 final PanelContoller panel=new PanelContoller(new GridBagLayout());
 		 FileUploaderButton fileUploaderButton= new FileUploaderButton();
-		 FileUploaderInput fileUploaderInput = new FileUploaderInput("test");
+		 FileUploaderInput fileUploaderInput = new FileUploaderInput("entrer un fichier ");
 		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
 		 ClassesList classes=new ClassesList(listModel, "classes");
@@ -119,6 +120,7 @@ public class MainController {
 		 SubClassesNotifier subClassesNotifier=new SubClassesNotifier();
 		 RelationsNotifier relationsNotifier=new RelationsNotifier();
 		 DetailsNotifier detailsNotifier=new DetailsNotifier();
+		 InputFileNotifier inputFileNotifier=new InputFileNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
@@ -134,6 +136,8 @@ public class MainController {
 		 relationsNotifier.addObserver(scrollPaneFour);
 		 showDetailsListener.setDetailsNotifier(detailsNotifier);
 		 detailsNotifier.addObserver(detailsField);
+		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
+		 inputFileNotifier.addObserver(fileUploaderInput);
 		 
 		 
 		 javax.swing.SwingUtilities.invokeLater(new Runnable() {

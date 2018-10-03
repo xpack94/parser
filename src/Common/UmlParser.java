@@ -271,7 +271,6 @@ public class UmlParser {
 			}
 			//supprimer les chaines vides
 			classDefinition.removeAll(Collections.singleton(""));
-			System.out.println(classDefinition);
 			return classDefinition;
 	}
 	public void setFile(File file){

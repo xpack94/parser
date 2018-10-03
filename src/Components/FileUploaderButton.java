@@ -7,12 +7,16 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
+import controller.FrameFactory;
 
 
 import ActionListeners.UploadFileListener;
 import Common.Features;
 import Common.UmlParser;
 import Notifiers.ClassNotifier;
+import Notifiers.InputFileNotifier;
 
 
 
@@ -22,6 +26,7 @@ public class FileUploaderButton extends JButton implements Observer{
 	private Features features=new Features();
 	private static String FILE_TITLE="Charger Fichier";
 	private ClassNotifier classNotifier;
+	private InputFileNotifier inputFileNotifier;
 
 	//le action listener du boutton qui va lui etre reliér
 	private UploadFileListener uploadFileListener=new UploadFileListener(this);
@@ -75,6 +80,13 @@ public class FileUploaderButton extends JButton implements Observer{
 	public void setReadFile(File readFile){
 		this.umlParser=new UmlParser(readFile);
 		try {
+			String fileName=readFile.getName();
+			this.inputFileNotifier.setFileName(fileName);
+			if(!fileName.substring(fileName.indexOf(".")+1, fileName.length()).equals("ucd")){
+				// le format choisit n'est pas .ucd
+				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "les fichiers doivent etre du format .ucd");
+				return;
+			}
 			String dataToParse= new String(this.umlParser.readFile(), "UTF-8");
 			this.umlParser.setClassNotifier(this.getClassNotifier());
 			//maintenant en parse le fichier lu 
@@ -97,5 +109,12 @@ public class FileUploaderButton extends JButton implements Observer{
 	public void update(Observable o, Object arg) {
 		
 	}
+	public InputFileNotifier getInputFileNotifier() {
+		return inputFileNotifier;
+	}
+	public void setInputFileNotifier(InputFileNotifier inputFileNotifier) {
+		this.inputFileNotifier = inputFileNotifier;
+	}
+	
 	
 }
