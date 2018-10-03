@@ -22,6 +22,7 @@ import Common.RelationDao;
 import Notifiers.AggregationsNotifier;
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
+import Notifiers.DetailsNotifier;
 import Notifiers.MethodeNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
@@ -41,6 +42,7 @@ public class ClassesList extends JList implements Observer{
 	private MethodeNotifier methodesNotifier;
 	private SubClassesNotifier subClassNotifier;
 	private RelationsNotifier relationsNotifier;
+	private DetailsNotifier detailsNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
 	
 	
@@ -118,6 +120,7 @@ public class ClassesList extends JList implements Observer{
 		this.methodesNotifier.setMethodes(methodesOfClass);
 		this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
 		this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
+		this.detailsNotifier.setClassContainerName(selectedClass);
 	}
 	
 	public void update(Observable o, Object arg) {
@@ -152,6 +155,12 @@ public class ClassesList extends JList implements Observer{
 	}
 	public void setRelationsNotifier(RelationsNotifier relationsNotifier) {
 		this.relationsNotifier = relationsNotifier;
+	}
+	public DetailsNotifier getDetailsNotifier() {
+		return detailsNotifier;
+	}
+	public void setDetailsNotifier(DetailsNotifier detailsNotifier) {
+		this.detailsNotifier = detailsNotifier;
 	}
 
 	

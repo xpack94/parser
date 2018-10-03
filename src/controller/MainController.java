@@ -134,6 +134,7 @@ public class MainController {
 		 subClassesNotifier.addObserver(scrollPaneThree);
 		 classes.setRelationsNotifier(relationsNotifier);
 		 relationsNotifier.addObserver(scrollPaneFour);
+		 classes.setDetailsNotifier(detailsNotifier);
 		 showDetailsListener.setDetailsNotifier(detailsNotifier);
 		 detailsNotifier.addObserver(detailsField);
 		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);

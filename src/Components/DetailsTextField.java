@@ -1,15 +1,19 @@
 package Components;
 
 import java.awt.Insets;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
+import Common.AggregationDao;
+import Common.ClassDao;
 import Common.DataApi;
 import Common.Features;
 import Common.RelationDao;
+import Common.RelationType;
 import Notifiers.DetailsNotifier;
 
 public class DetailsTextField extends JTextArea implements Observer {
@@ -62,7 +66,14 @@ public class DetailsTextField extends JTextArea implements Observer {
 			}
 			
 		}else if(selectedValue.contains("A")){
-			//afficher les details de l'aggregations
+			//afficher les details de l'aggregation
+			String containerClass=((DetailsNotifier)o).getClassContainerName();
+			String selectedAggregationPart=((DetailsNotifier)o).getSelectedValue();
+			String selectedPart=selectedAggregationPart.substring(selectedAggregationPart.indexOf(")")+1,selectedAggregationPart.length());
+			AggregationDao selectedAggregation=DataApi.aggregations.get(containerClass) != null?DataApi.aggregations.get(containerClass):null;
+			details=selectedAggregation.getAggregationDetails();
+			
+			
 			
 		}
 		this.setText("");
