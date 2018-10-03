@@ -69,7 +69,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 			//afficher les details de l'aggregation
 			String containerClass=((DetailsNotifier)o).getClassContainerName();
 			String selectedAggregationPart=((DetailsNotifier)o).getSelectedValue();
-			String selectedPart=selectedAggregationPart.substring(selectedAggregationPart.indexOf(")")+1,selectedAggregationPart.length());
+			String selectedPart=selectedAggregationPart.substring(selectedAggregationPart.indexOf("_")+1,selectedAggregationPart.length());
 			AggregationDao selectedAggregation=DataApi.aggregations.get(containerClass) != null?DataApi.aggregations.get(containerClass):null;
 			details=selectedAggregation.getAggregationDetails();
 			

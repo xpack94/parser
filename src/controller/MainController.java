@@ -47,11 +47,11 @@ public class MainController {
 		 
 		 //caracteristiques de l'input
 		 Features fileUploaderInputFeatures=new Features(1,0,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
-				 new Insets(0,0,0,0),0,10,1,0);
+				 new Insets(0,15,0,0),0,10,1,0);
 		 
 		 //caracteristiques du container des classes
 		 Features classListFeatures=new Features(0,1,2,3,GridBagConstraints.VERTICAL,GridBagConstraints.CENTER,
-				 new Insets(0,0,0,15),-205,0,0,0);
+				 new Insets(17,0,0,15),-205,0,0,0);
 		 
 		 //caracteristiques des quatre scrollPanel su milieu
 		 

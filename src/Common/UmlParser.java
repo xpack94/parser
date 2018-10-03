@@ -1,5 +1,6 @@
 package Common;
 
+import java.awt.JobAttributes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,7 @@ public class UmlParser {
 	
 	private File fileToParse;
 	private ClassNotifier classNotifier;
+	private boolean ERROR_ENCOUNTERED=false;
 	
 	public UmlParser(File fileToParse){
 		this.fileToParse=fileToParse;
@@ -61,6 +63,11 @@ public class UmlParser {
 		List<String> fileContentToBeParsed = new ArrayList<String>(Arrays.asList(file.split(";")));
 		
 		for(int i=0;i<fileContentToBeParsed.size();i++){
+			if(this.ERROR_ENCOUNTERED){
+				//si une erreur a été détecté lors du parsing on arrete 
+				this.ERROR_ENCOUNTERED=false; //on le remet a jours
+				break;
+			}
 			//on boucle sur chaque element et on appele la methode qui gere chaque sous element
 			this.filterEachSubContent(fileContentToBeParsed.get(i).trim());
 		}
@@ -114,8 +121,9 @@ public class UmlParser {
 		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
 		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
 		if(DataApi.classes.get(ClassName)!=null){
-			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName);
-			System.exit(0);
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return;
 		}
 		//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
 		DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
@@ -134,6 +142,8 @@ public class UmlParser {
 				String attributeName=attribute.substring(0,clIndex).replace(",","");
 				String attributeType=attribute.substring(clIndex+1,attribute.length()).replace(",","");
 				attributesList.add(new AttributeDao(attributeName, attributeType));
+				
+				
 			}
 		}
 		
@@ -181,7 +191,15 @@ public class UmlParser {
 				//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
 				for (String sub:subClassesContainer){
 					ClassDao parentClass=DataApi.classes.get(generalizationClassName);
-					parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
+					if(parentClass!=null){
+						parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
+					}else{
+						//la classe parent n'est pas definie 
+						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+generalizationClassName+" de la generalization n'est pas definie","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+						this.ERROR_ENCOUNTERED=true;
+						break;
+					}
+					
 				}
 				
 			}
@@ -207,6 +225,13 @@ public class UmlParser {
 					//l'index 1 represente le type de la relation
 					ClassDao relatedClass=DataApi.classes.get(relationBetween.get(0));
 					if(relatedClass!=null){
+						//on verifie d'abord si la multiplicité de la relation est valide
+						if(!this.isValidMultiplcity(relationBetween.get(1).replace(",", ""))){
+							this.ERROR_ENCOUNTERED=true;
+							JOptionPane.showMessageDialog(FrameFactory.getFrame(),
+									"la multiplicité de la classe "+relatedClass.getName()+" n'est pas valide");
+							return;
+						}
 						relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
 						//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
 						DataApi.relations.put(relationName, relationDescription);
@@ -214,8 +239,9 @@ public class UmlParser {
 						ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
 						relatedClass.addRelationToRelations(relationDescription);
 					}else{
-						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas");
-						System.exit(0);
+						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+						this.ERROR_ENCOUNTERED=true;
+						return;
 					}	
 				}
 				
@@ -224,6 +250,8 @@ public class UmlParser {
 		//ajout des details de la relation 
 		relationDescription.setRelationDetails(String.join("\r\n", relation));
 	}
+	//methode qui fait la gestion des aggregation et qui popule le hashMap des aggregations
+	//avec le container comme clé 
 	private void handleAggregations(List<String> aggregations){
 		aggregations=this.removeWhiteSpaces(aggregations);
 		List<RelationType> aggregationRelations=new ArrayList<RelationType>();
@@ -248,8 +276,9 @@ public class UmlParser {
 				if(aggregationPartClass!=null){
 					aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
 				}else{
-					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas");
-					System.exit(0);
+					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+					this.ERROR_ENCOUNTERED=true;
+					return;
 				}
 				
 			}
@@ -263,6 +292,18 @@ public class UmlParser {
 		aggregation.setAggregationDetails(String.join("\r\n", aggregations));
 		
 	}
+	
+	
+	//methode qui verifie si la multiplicité est valide ou non
+	//retourne un boolean 
+	private boolean isValidMultiplcity(String multiplicity){
+		List<String> multiplicities=Arrays.asList("ONE","MANY","ONE_OR_MANY","OPTIONALLY_ONE","UNDEFINED");
+		if(multiplicities.indexOf(multiplicity)==-1){
+			return false;
+		}
+		return true;
+	}
+		
 	
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
 		

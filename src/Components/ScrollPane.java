@@ -134,13 +134,10 @@ public class ScrollPane extends JScrollPane implements Observer {
 		JList<String> relationsList= (JList<String>)viewport.getView();
 		if(aggr!=null){
 			for(RelationType parts:aggr.getAggregationParts()){
-				((DefaultListModel)relationsList.getModel()).addElement("(A) "+
+				((DefaultListModel)relationsList.getModel()).addElement("(A) P_"+
 						parts.getRelatedTo().getName());
 			}
 		}
-		
-		
-		
 	}
 	
 	public void setComponentInScrollPane(Component c){
