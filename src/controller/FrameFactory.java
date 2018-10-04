@@ -9,9 +9,10 @@ public class FrameFactory extends JFrame{
 	private static JFrame FRAME =new FrameFactory("test");
 	private FrameFactory(String title){
 		super(title);
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		
 		this.setUndecorated(false);
-		this.setResizable(false);
+		this.setResizable(true);
+		this.setSize(700, 700);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}

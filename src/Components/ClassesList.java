@@ -68,9 +68,7 @@ public class ClassesList extends JList implements Observer{
 		JScrollPane listScroller = new JScrollPane(this);
 	}
 	
-	public void setObservedClass(Object o){
-		// code to be implemented soon
-	}
+	
 	
 	//fonction decrivant tout les caracteristiques que le composante va avoir
 	private void setFeaturesOfComponent(int gridx,int gridy,int gridWidth,int gridHeight,int fill,int anchor
@@ -125,6 +123,12 @@ public class ClassesList extends JList implements Observer{
 	
 	public void update(Observable o, Object arg) {
 		//on met a jours la liste des classes a chaque notification
+		if( ((ClassNotifier)o).isShouldRemoveClass() ){
+			//on supprime tout ce qu'il y'avait dans le JList 
+			//car une erreur c'est produite lors de la lecture du fichier chargé
+			((DefaultListModel)this.getModel()).clear();
+			return;
+		}
 		ClassNotifier classToBeAdded=(ClassNotifier)o ;
 		((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
 		

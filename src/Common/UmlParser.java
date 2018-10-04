@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -60,12 +61,19 @@ public class UmlParser {
 	}
 	
 	public void parseFile(String file){
+		//initialisation du Notifier du  ClassList
+		this.classNotifier.setShouldRemoveClass(false); 
 		List<String> fileContentToBeParsed = new ArrayList<String>(Arrays.asList(file.split(";")));
 		
 		for(int i=0;i<fileContentToBeParsed.size();i++){
 			if(this.ERROR_ENCOUNTERED){
 				//si une erreur a été détecté lors du parsing on arrete 
 				this.ERROR_ENCOUNTERED=false; //on le remet a jours
+				
+				//true veut dire qu'on doit supprimer toutes les classes du ClassList
+				//a cause d'une erreur lors du parsing
+				this.classNotifier.setShouldRemoveClass(true);
+				this.reset(); //remet a jours le DataApi
 				break;
 			}
 			//on boucle sur chaque element et on appele la methode qui gere chaque sous element
@@ -117,9 +125,18 @@ public class UmlParser {
 		}
 		
 		//maintenant puisque on a extrait les attributs et les methode de la class
-		//on peut les populer dans leurs classes respectives
+		//on peut les peupler dans leurs classes respectives
 		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
 		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
+		
+		if(this.checkDuplicates(classAttributes)){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
+					,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return;
+			
+		}
+		
 		if(DataApi.classes.get(ClassName)!=null){
 			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
 			this.ERROR_ENCOUNTERED=true;
@@ -128,11 +145,11 @@ public class UmlParser {
 		//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
 		DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
 		//ajout de la class dans le notificateur
-		//ce dernier va notifier le Jlist pour qu'il se met a jours a chaque ajout de class
+		//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
 		this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
 		}
 	
-	//methode qui cree une list de type AttributeDao et qui le popule avec les attribute données 
+	//methode qui cree une list de type AttributeDao et qui le peuple avec les attribute données 
 	private List<AttributeDao> populateAttributes(List<String> attributes){
 		List<AttributeDao> attributesList=new ArrayList<AttributeDao>();
 		if(attributes.size()>0){
@@ -239,6 +256,7 @@ public class UmlParser {
 						ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
 						relatedClass.addRelationToRelations(relationDescription);
 					}else{
+						System.out.println("tes");
 						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
 						this.ERROR_ENCOUNTERED=true;
 						return;
@@ -303,8 +321,29 @@ public class UmlParser {
 		}
 		return true;
 	}
-		
 	
+	private boolean checkDuplicates(List<AttributeDao> attributes){
+		HashMap<String, Boolean> attrList=new HashMap<String, Boolean>();
+		
+		for(AttributeDao attr:attributes){
+			if(attrList.get(attr.getAttributeName()+" "+attr.getAttributeType())==null){
+				attrList.put(attr.getAttributeName()+" "+attr.getAttributeType(), true);
+			}else{
+				return true;
+			}
+		}
+		return false;
+	}
+	private boolean checkMethodeDuplicates(List<MethodeDao> methodes){
+		return true;
+	}
+	
+	// la methode qui remet a zero les données 
+	private void reset(){
+		DataApi.classes.clear();
+		DataApi.aggregations.clear();
+		DataApi.relations.clear();
+	}
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
 		
 			for(int i=0;i<classDefinition.size();i++){

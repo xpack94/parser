@@ -28,10 +28,15 @@ import Notifiers.SubClassesNotifier;
 
 public class MainController {
 
-
-	public static void main(String[] args) {
-		
-		 final PanelContoller panel=new PanelContoller(new GridBagLayout());
+	private  PanelContoller panel;
+	
+	public MainController(PanelContoller panel){
+		this.panel=panel;
+		this.init();
+	}
+	
+	private void init(){
+		 //final PanelContoller panel=new PanelContoller(new GridBagLayout());
 		 FileUploaderButton fileUploaderButton= new FileUploaderButton();
 		 FileUploaderInput fileUploaderInput = new FileUploaderInput("entrer un fichier ");
 		 DetailsTextField detailsField=new DetailsTextField("Details");
@@ -140,16 +145,16 @@ public class MainController {
 		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
 		 inputFileNotifier.addObserver(fileUploaderInput);
 		 
-		 
-		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	            	JFrame frame=FrameFactory.getFrame();
-	            	frame.add(panel);
-	            	frame.setVisible(true);
-	            }
-	        });
-		 
-
 	}
+
+	public PanelContoller getPanel() {
+		return panel;
+	}
+
+	public void setPanel(PanelContoller panel) {
+		this.panel = panel;
+	}
+
+	
 
 }
