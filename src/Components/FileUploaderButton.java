@@ -31,7 +31,12 @@ public class FileUploaderButton extends JButton implements Observer{
 	private static String FILE_TITLE="Charger Fichier";
 	private ClassNotifier classNotifier;
 	private InputFileNotifier inputFileNotifier;
-
+	
+	private String generalization="GENERALIZATION+\\s+(\\w*)+\\s+(SUBCLASSES[^;]*)";
+	private String classes="\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)";
+	private String attributes="(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)";
+	private String relations="RELATION+\\s+(\\w*)+\\s+(ROLES[^;]*)";
+	
 	//le action listener du boutton qui va lui etre reliér
 	private UploadFileListener uploadFileListener=new UploadFileListener(this);
 	private UmlParser umlParser;
@@ -66,6 +71,7 @@ public class FileUploaderButton extends JButton implements Observer{
 	}
 	//la methode qui prends le fichier choisis en entrée et lit le fichier sous forme de string
 	public void setReadFile(File readFile){
+	
 		this.umlParser=new UmlParser(readFile);
 		try {
 			String fileName=readFile.getName();
