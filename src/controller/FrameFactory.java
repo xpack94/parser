@@ -12,7 +12,7 @@ public class FrameFactory extends JFrame{
 		
 		this.setUndecorated(false);
 		this.setResizable(true);
-		this.setSize(700, 700);
+		this.setSize(740, 710);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}

@@ -9,6 +9,7 @@ import java.awt.Insets;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import ActionListeners.ShowDetailsListener;
@@ -42,6 +43,13 @@ public class MainController {
 		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
 		 ClassesList classes=new ClassesList(listModel, "classes");
+		 JPanel attrPanel = new JPanel();
+		 JPanel methodesPanel = new JPanel();
+		 JPanel subClassesPanel = new JPanel();
+		 JPanel aggrAsoPanel = new JPanel();
+		 
+		 
+		 
 		 
 		 
 		 //ajout des caracteristiques de chaque composante ....
@@ -102,10 +110,10 @@ public class MainController {
 		 
 		 //initialiser les dimentions de chaque composante
 		 fileUploaderInput.setPreferredSize(new Dimension(250,15));
-		 scrollPaneOne.setPreferredSize(new Dimension(150,150));
-		 scrollPaneTwo.setPreferredSize(new Dimension(150,150));
-		 scrollPaneThree.setPreferredSize(new Dimension(150,150));
-		 scrollPaneFour.setPreferredSize(new Dimension(150,150)); 
+		 scrollPaneOne.setPreferredSize(new Dimension(220,220));
+		 scrollPaneTwo.setPreferredSize(new Dimension(220,220));
+		 scrollPaneThree.setPreferredSize(new Dimension(220,220));
+		 scrollPaneFour.setPreferredSize(new Dimension(220,220)); 
 		 detailsField.setPreferredSize(new Dimension(300,150));
 		 
 		 //l'ajout des composantes au panel

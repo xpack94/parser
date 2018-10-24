@@ -6,6 +6,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import controller.FrameFactory;
 
 import Components.FileUploaderButton;
 
@@ -27,7 +30,8 @@ public class UploadFileListener implements ActionListener{
 		        try {
 		          this.fileUploaderButton.setReadFile(file);
 		        } catch (Exception ex) {
-		          System.out.println("problem d'acces au fichier"+file.getAbsolutePath());
+		        	JOptionPane.showMessageDialog(FrameFactory.getFrame(), "probleme d'acces au fichier"+file.getAbsolutePath(),
+		        			"Erreur",JOptionPane.ERROR_MESSAGE);
 		        }
 		    } 
 		    else {

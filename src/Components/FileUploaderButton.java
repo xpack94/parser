@@ -2,9 +2,13 @@ package Components;
 
 import java.awt.Insets;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -54,22 +58,6 @@ public class FileUploaderButton extends JButton implements Observer{
 		this.addActionListener(this.uploadFileListener);
 	}
 	
-	//fonction decrivant tout les caracteristiques que le composante va avoir
-	private void setFeaturesOfComponent(int gridx,int gridy,int gridWidth,int gridHeight,int fill,int anchor
-			,Insets insets,int ipadx,int ipady,float weightx,float weighty){
-		this.features.gridx=gridx;
-		this.features.gridy=gridy;
-		this.features.gridwidth=gridWidth;
-		this.features.gridheight=gridHeight;
-		this.features.fill=fill;
-		this.features.anchor=anchor;
-		this.features.insets=insets;
-		this.features.ipady=ipady;
-		this.features.ipadx=ipadx;
-		this.features.weightx=weightx;
-		this.features.weighty=weighty;
-	}
-	
 	public Features getComponentFeatures(){
 		return this.features;
 	}
@@ -82,10 +70,34 @@ public class FileUploaderButton extends JButton implements Observer{
 		try {
 			String fileName=readFile.getName();
 			this.inputFileNotifier.setFileName(fileName);
+			
 			if(!fileName.substring(fileName.indexOf(".")+1, fileName.length()).equals("ucd")){
 				// le format choisit n'est pas .ucd
 				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "les fichiers doivent etre du format .ucd");
 				return;
+			}
+			try {
+				Scanner s=new Scanner(readFile);
+				
+				
+				while(s.hasNext()){
+					String classes =s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
+					
+					
+					Pattern r = Pattern.compile("(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)");
+
+				      // Now create matcher object.
+					
+				      Matcher m = r.matcher(classes);
+				     
+				      if(m.find()){
+				    	 
+				    	  System.out.println(m.group(0));
+				      }
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			String dataToParse= new String(this.umlParser.readFile(), "UTF-8");
 			this.umlParser.setClassNotifier(this.getClassNotifier());

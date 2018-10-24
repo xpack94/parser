@@ -46,7 +46,7 @@ public class UmlParser {
 					fis.read(data);
 					fis.close();
 					return data;
-				} catch (IOException e) {
+				}catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -62,7 +62,8 @@ public class UmlParser {
 	
 	public void parseFile(String file){
 		//initialisation du Notifier du  ClassList
-		this.classNotifier.setShouldRemoveClass(false); 
+		this.classNotifier.setShouldRemoveClass(true); 
+		this.reset(); // mettre a zero tout les HashMaps contenant les données
 		List<String> fileContentToBeParsed = new ArrayList<String>(Arrays.asList(file.split(";")));
 		
 		for(int i=0;i<fileContentToBeParsed.size();i++){
@@ -128,13 +129,20 @@ public class UmlParser {
 		//on peut les peupler dans leurs classes respectives
 		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
 		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
-		
+		//on verifie si il existe d'attribut dupliqué dans la meme classe
 		if(this.checkDuplicates(classAttributes)){
 			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
 					,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
 			this.ERROR_ENCOUNTERED=true;
 			return;
 			
+		}
+		//on verifie si il existe des duplications de methodes dans la meme classe
+		if(this.checkMethodeDuplicates(classMethodes)){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
+					"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return;
 		}
 		
 		if(DataApi.classes.get(ClassName)!=null){
@@ -322,20 +330,36 @@ public class UmlParser {
 		return true;
 	}
 	
+	//methode qui verifie si il existe des duplications d'attribut dans une meme classe 
 	private boolean checkDuplicates(List<AttributeDao> attributes){
 		HashMap<String, Boolean> attrList=new HashMap<String, Boolean>();
 		
 		for(AttributeDao attr:attributes){
-			if(attrList.get(attr.getAttributeName()+" "+attr.getAttributeType())==null){
-				attrList.put(attr.getAttributeName()+" "+attr.getAttributeType(), true);
+			if(attrList.get(attr.getAttributeName())==null){
+				attrList.put(attr.getAttributeName(), true);
 			}else{
 				return true;
 			}
 		}
 		return false;
 	}
+	
+	//methode qui verifie l'existance d'une diplication de methodes dans une meme classe
 	private boolean checkMethodeDuplicates(List<MethodeDao> methodes){
-		return true;
+		HashMap<String, Boolean> methodesList=new HashMap<String, Boolean>();
+		for (MethodeDao methode:methodes){
+			String m=methode.getMethodeName();
+			for(AttributeDao params:methode.getParameters()){
+				m+=params.getAttributeName()+" "+params.getAttributeType();
+			}
+			if(methodesList.get(m)!=null){
+				return true;
+			}
+			methodesList.put(m, true);
+		}
+		return false;
+		
+		
 	}
 	
 	// la methode qui remet a zero les données 
@@ -344,6 +368,8 @@ public class UmlParser {
 		DataApi.aggregations.clear();
 		DataApi.relations.clear();
 	}
+	
+	
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
 		
 			for(int i=0;i<classDefinition.size();i++){

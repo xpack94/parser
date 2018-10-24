@@ -69,24 +69,6 @@ public class ClassesList extends JList implements Observer{
 	}
 	
 	
-	
-	//fonction decrivant tout les caracteristiques que le composante va avoir
-	private void setFeaturesOfComponent(int gridx,int gridy,int gridWidth,int gridHeight,int fill,int anchor
-			,Insets insets,int ipadx,int ipady,float weightx,float weighty){
-		this.features.gridx=gridx;
-		this.features.gridy=gridy;
-		this.features.gridwidth=gridWidth;
-		this.features.gridheight=gridHeight;
-		this.features.fill=fill;
-		this.features.anchor=anchor;
-		this.features.insets=insets;
-		this.features.ipady=ipady;
-		this.features.ipadx=ipadx;
-		this.features.weightx=weightx;
-		this.features.weighty=weighty;
-	}
-	
-	
 	public Features getFeatures() {
 		return features;
 	}
@@ -123,14 +105,17 @@ public class ClassesList extends JList implements Observer{
 	
 	public void update(Observable o, Object arg) {
 		//on met a jours la liste des classes a chaque notification
-		if( ((ClassNotifier)o).isShouldRemoveClass() ){
-			//on supprime tout ce qu'il y'avait dans le JList 
-			//car une erreur c'est produite lors de la lecture du fichier chargé
+		if( ((ClassNotifier)o).isShouldRemoveClass() ){				 
+			//on supprime tout ce qu'il y'avait dans le ClassList
 			((DefaultListModel)this.getModel()).clear();
+			((ClassNotifier)o).setShouldRemoveClass(false); //remettre a zero
 			return;
 		}
 		ClassNotifier classToBeAdded=(ClassNotifier)o ;
-		((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
+		if(classToBeAdded!=null){
+			((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
+		}
+		
 		
 	}
 	private void addSelectEvent(){

@@ -44,23 +44,6 @@ public class ScrollPane extends JScrollPane implements Observer {
 			
 	}	
 	
-	
-	
-	//fonction decrivant tout les caracteristiques que le composante va avoir
-			private void setFeaturesOfComponent(int gridx,int gridy,int gridWidth,int gridHeight,int fill,int anchor
-					,Insets insets,int ipadx,int ipady,float weightx,float weighty){
-				this.features.gridx=gridx;
-				this.features.gridy=gridy;
-				this.features.gridwidth=gridWidth;
-				this.features.gridheight=gridHeight;
-				this.features.fill=fill;
-				this.features.anchor=anchor;
-				this.features.insets=insets;
-				this.features.ipady=ipady;
-				this.features.ipadx=ipadx;
-				this.features.weightx=weightx;
-				this.features.weighty=weighty;
-			}
 			
 	//la fonction qui va s'executer a chaque fois que les elements de la classe observée changent 
 	public void update(Observable o, Object arg) {

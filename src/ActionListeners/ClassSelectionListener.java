@@ -18,8 +18,12 @@ public class ClassSelectionListener implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()){
             ClassesList source = (ClassesList)e.getSource();
-            String selected = source.getSelectedValue().toString();
-            this.classesContainer.updateChosenClass(selected);
+            if(source.getSelectedValue()!=null){
+            	String selected = source.getSelectedValue().toString();
+            	this.classesContainer.updateChosenClass(selected);
+            }
+      
+            
             
         }
 		
