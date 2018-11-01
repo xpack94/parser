@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,10 +33,7 @@ public class FileUploaderButton extends JButton implements Observer{
 	private ClassNotifier classNotifier;
 	private InputFileNotifier inputFileNotifier;
 	
-	private String generalization="GENERALIZATION+\\s+(\\w*)+\\s+(SUBCLASSES[^;]*)";
-	private String classes="\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)";
-	private String attributes="(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)";
-	private String relations="RELATION+\\s+(\\w*)+\\s+(ROLES[^;]*)";
+	
 	
 	//le action listener du boutton qui va lui etre reliér
 	private UploadFileListener uploadFileListener=new UploadFileListener(this);
@@ -73,48 +71,44 @@ public class FileUploaderButton extends JButton implements Observer{
 	public void setReadFile(File readFile){
 	
 		this.umlParser=new UmlParser(readFile);
-		try {
-			String fileName=readFile.getName();
-			this.inputFileNotifier.setFileName(fileName);
+		String fileName=readFile.getName();
+		this.inputFileNotifier.setFileName(fileName);
+		
+		if(!fileName.substring(fileName.indexOf(".")+1, fileName.length()).equals("ucd")){
+			// le format choisit n'est pas .ucd
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "les fichiers doivent etre du format .ucd");
+			return;
+		}
+		Scanner s=null;
+		/*try {
+			s=new Scanner(readFile);
 			
-			if(!fileName.substring(fileName.indexOf(".")+1, fileName.length()).equals("ucd")){
-				// le format choisit n'est pas .ucd
-				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "les fichiers doivent etre du format .ucd");
-				return;
-			}
-			try {
-				Scanner s=new Scanner(readFile);
-				
-				
-				while(s.hasNext()){
-					String classes =s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
-					
-					
-					Pattern r = Pattern.compile("(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)");
-
-				      // Now create matcher object.
-					
-				      Matcher m = r.matcher(classes);
-				     
-				      if(m.find()){
-				    	 
-				    	  System.out.println(m.group(0));
-				      }
+				String classes =s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
+				MatchResult result=s.match();
+				while(result.groupCount()>0){
+				System.out.println(result.group(0));
+				try{
+					s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
+					result=s.match();
+				}catch(Exception e){
+					break;
 				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				
 			}
-			String dataToParse= new String(this.umlParser.readFile(), "UTF-8");
-			this.umlParser.setClassNotifier(this.getClassNotifier());
-			//maintenant en parse le fichier lu 
-			this.umlParser.parseFile(dataToParse);
-			
-			
-		} catch (UnsupportedEncodingException e) {
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}finally{
+			if(s!=null){
+				s.close();
+				System.out.println("closed");
+			}
+			
+		}*/
+		this.umlParser.setClassNotifier(this.getClassNotifier());
+		//maintenant en parse le fichier lu 
+		this.umlParser.parseFile(readFile);
 	}
 	
 	

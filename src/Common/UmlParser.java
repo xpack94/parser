@@ -15,6 +15,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -29,57 +33,48 @@ public class UmlParser {
 	private ClassNotifier classNotifier;
 	private boolean ERROR_ENCOUNTERED=false;
 	
+	private String GENERALIZATION="GENERALIZATION+\\s+(\\w*)+\\s+(SUBCLASSES[^;]*)";
+	private String CLASSES="\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)";
+	private String ATTRIBUTES="(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)";
+	private String METHODES="(?<=OPERATIONS)([^;]*)";
+	private String RELATIONS="RELATION+\\s+(\\w*)+\\s+(ROLES[^;]*)";
+	
 	public UmlParser(File fileToParse){
 		this.fileToParse=fileToParse;
 	}
-
 	
-	public byte[] readFile(){
-		if(this.fileToParse !=null){
-			FileReader fileReader;
-			try {
-				fileReader = new FileReader(this.fileToParse);
-				BufferedReader bufferedReader =new BufferedReader(fileReader);
-				FileInputStream fis = new FileInputStream(this.fileToParse);
-				byte[] data = new byte[(int) this.fileToParse.length()];
-				try {
-					fis.read(data);
-					fis.close();
-					return data;
-				}catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+	public void parseFile(File file){
+		
+		Scanner s = null;
+		try {
+			 s=new Scanner(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return new byte[1];
-	}
-	
-	public void parseFile(String file){
+		
 		//initialisation du Notifier du  ClassList
 		this.classNotifier.setShouldRemoveClass(true); 
 		this.reset(); // mettre a zero tout les HashMaps contenant les données
-		List<String> fileContentToBeParsed = new ArrayList<String>(Arrays.asList(file.split(";")));
-		
-		for(int i=0;i<fileContentToBeParsed.size();i++){
-			if(this.ERROR_ENCOUNTERED){
-				//si une erreur a été détecté lors du parsing on arrete 
-				this.ERROR_ENCOUNTERED=false; //on le remet a jours
-				
-				//true veut dire qu'on doit supprimer toutes les classes du ClassList
-				//a cause d'une erreur lors du parsing
-				this.classNotifier.setShouldRemoveClass(true);
-				this.reset(); //remet a jours le DataApi
-				break;
-			}
-			//on boucle sur chaque element et on appele la methode qui gere chaque sous element
-			this.filterEachSubContent(fileContentToBeParsed.get(i).trim());
+		if(this.ERROR_ENCOUNTERED){
+			//si une erreur a été détecté lors du parsing on arrete 
+			this.ERROR_ENCOUNTERED=false; //on le remet a jours
+			
+			//true veut dire qu'on doit supprimer toutes les classes du ClassList
+			//a cause d'une erreur lors du parsing
+			this.classNotifier.setShouldRemoveClass(true);
+			this.reset(); //remet a jours le DataApi
+			return;
 		}
+		if(s!=null){
+			ArrayList<String> fileClasses=new ArrayList<String>(Arrays.asList((s.findWithinHorizon(this.CLASSES, 0).split("CLASS"))));
+			//ArrayList<String> fileRelations=new ArrayList<String>(Arrays.asList(s.findWithinHorizon(this.RELATIONS, 0)));
+			//ArrayList<String> fileGeneralizations=new ArrayList<String>(Arrays.asList(s.findWithinHorizon(this.GENERALIZATION, 0)));
+			this.handleClasses(s);
+			//this.handleGeneralizations(fileGeneralizations);
+			//this.handleRelation(fileRelations);
+		}
+		
 	}
 	
 	private void filterEachSubContent(String subContent){
@@ -91,7 +86,7 @@ public class UmlParser {
 			//on eleve tout les espaces
 			subFileContent.set(i, subFileContent.get(i).trim());
 			if(subFileContent.get(i).contains("CLASS")){
-				this.handleClass(subFileContent.subList(i, subFileContent.size()));
+				//this.handleClass(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("GENERALIZATION")){
 				this.handleGeneralizations(subFileContent.subList(i, subFileContent.size()));
@@ -106,55 +101,19 @@ public class UmlParser {
 		}
 	}
 	
-	private void handleClass(List<String> classDefinition){
-		//on se debarasse de tout les espaces
-		classDefinition=this.removeWhiteSpaces(classDefinition);
-		String ClassName="";
-		List<String> attributes=new ArrayList<String>();
-		List<String> methodes=new ArrayList<String>();
-		//maintenant on dispose d'un array list contenant la description d'une class
-		for(int i=0;i<classDefinition.size();i++){
-			if(classDefinition.get(i).contains("CLASS")){
-				ClassName=classDefinition.get(i).substring(i+6,classDefinition.get(i).length());
-			}else if(classDefinition.get(i).contains("ATTRIBUTES")){
-				int methodesIndex=classDefinition.indexOf("OPERATIONS");
-				attributes=classDefinition.subList(i+1, methodesIndex);
-			}else if(classDefinition.get(i).contains("OPERATIONS")){
-				 methodes=classDefinition.subList(i+1, classDefinition.size());
+	private void handleClasses(Scanner scanner){
+		try{
+			scanner.findWithinHorizon(this.CLASSES, 0);	
+			MatchResult results=scanner.match();
+			while(results.groupCount()>0){	
+				this.handleOneClass(results.group(0));
+				scanner.findWithinHorizon(this.CLASSES, 0);
+				results=scanner.match();
 			}
-			
 		}
-		
-		//maintenant puisque on a extrait les attributs et les methode de la class
-		//on peut les peupler dans leurs classes respectives
-		List<AttributeDao> classAttributes=this.populateAttributes(attributes);
-		List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
-		//on verifie si il existe d'attribut dupliqué dans la meme classe
-		if(this.checkDuplicates(classAttributes)){
-			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
-					,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-			this.ERROR_ENCOUNTERED=true;
-			return;
-			
+		catch(Exception e){
 		}
-		//on verifie si il existe des duplications de methodes dans la meme classe
-		if(this.checkMethodeDuplicates(classMethodes)){
-			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
-					"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
-			this.ERROR_ENCOUNTERED=true;
-			return;
-		}
-		
-		if(DataApi.classes.get(ClassName)!=null){
-			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-			this.ERROR_ENCOUNTERED=true;
-			return;
-		}
-		//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
-		DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
-		//ajout de la class dans le notificateur
-		//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
-		this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
+	
 		}
 	
 	//methode qui cree une list de type AttributeDao et qui le peuple avec les attribute données 
@@ -173,6 +132,81 @@ public class UmlParser {
 		}
 		
 		return attributesList;
+		
+	}
+	
+	private void handleOneClass(String oneClass){
+				System.out.println(oneClass);
+				// on matche les attributs de la classe
+				Pattern patternAttrs=Pattern.compile(this.ATTRIBUTES);
+				Matcher matcherAttrs=patternAttrs.matcher(oneClass);
+				List<AttributeDao> classAttributes=null;
+				if(matcherAttrs.find()){
+					// des attribut existe pour cette classe 
+					// alors on doit les créer
+					classAttributes=this.populateAttributes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(matcherAttrs.group().split(",")))));
+				}
+				
+				// on matche les methode de la classe
+				Pattern patternMethodes=Pattern.compile(this.METHODES);
+				Matcher MatcherMethodes=patternMethodes.matcher(oneClass);
+				List<MethodeDao> classMethodes=null;
+				if(MatcherMethodes.find()){
+					// des methodes existe pour cette classe 
+					// alors on doit les créer
+					classMethodes=this.populateMethodes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(MatcherMethodes.group().split(",")))));
+				}
+				
+			
+			List<String > classDefinition=new ArrayList<String>(Arrays.asList(oneClass.split("\\r\\n")));	
+			//on se debarasse de tout les espaces
+			classDefinition=this.removeWhiteSpaces(classDefinition);
+			String ClassName="";
+			List<String> attributes=new ArrayList<String>();
+			List<String> methodes=new ArrayList<String>();
+			//maintenant on dispose d'un array list contenant la description d'une class
+			for(int i=0;i<classDefinition.size();i++){
+				if(classDefinition.get(i).contains("CLASS")){
+					ClassName=classDefinition.get(i).substring(i+6,classDefinition.get(i).length());
+				}else if(classDefinition.get(i).contains("ATTRIBUTES")){
+					int methodesIndex=classDefinition.indexOf("OPERATIONS");
+					attributes=classDefinition.subList(i+1, methodesIndex);
+				}else if(classDefinition.get(i).contains("OPERATIONS")){
+					 methodes=classDefinition.subList(i+1, classDefinition.size());
+				}
+			
+			}
+			
+			//maintenant puisque on a extrait les attributs et les methode de la class
+			//on peut les peupler dans leurs classes respectives
+			//List<AttributeDao> classAttributes=this.populateAttributes(attributes);
+			//List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
+			//on verifie si il existe d'attribut dupliqué dans la meme classe
+			if(classAttributes!=null  && this.checkDuplicates(classAttributes)){
+				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
+						,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+				this.ERROR_ENCOUNTERED=true;
+				return;
+				
+			}
+			//on verifie si il existe des duplications de methodes dans la meme classe
+			if(this.checkMethodeDuplicates(classMethodes)){
+				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
+						"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
+				this.ERROR_ENCOUNTERED=true;
+				return;
+			}
+			
+			if(DataApi.classes.get(ClassName)!=null){
+				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+				this.ERROR_ENCOUNTERED=true;
+				return;
+			}
+			//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
+			DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
+			//ajout de la class dans le notificateur
+			//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
+			this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
 		
 	}
 	
