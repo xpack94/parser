@@ -38,6 +38,8 @@ public class UmlParser {
 	private String ATTRIBUTES="(?<=ATTRIBUTES)([^;]*)(?=OPERATIONS)";
 	private String METHODES="(?<=OPERATIONS)([^;]*)";
 	private String RELATIONS="RELATION+\\s+(\\w*)+\\s+(ROLES[^;]*)";
+	private String SUBCLASSES="SUBCLASSES.*";
+	private String GENERALIZATIONHEADER="GENERALIZATION.*";
 	
 	public UmlParser(File fileToParse){
 		this.fileToParse=fileToParse;
@@ -67,12 +69,9 @@ public class UmlParser {
 			return;
 		}
 		if(s!=null){
-			ArrayList<String> fileClasses=new ArrayList<String>(Arrays.asList((s.findWithinHorizon(this.CLASSES, 0).split("CLASS"))));
-			//ArrayList<String> fileRelations=new ArrayList<String>(Arrays.asList(s.findWithinHorizon(this.RELATIONS, 0)));
-			//ArrayList<String> fileGeneralizations=new ArrayList<String>(Arrays.asList(s.findWithinHorizon(this.GENERALIZATION, 0)));
 			this.handleClasses(s);
-			//this.handleGeneralizations(fileGeneralizations);
-			//this.handleRelation(fileRelations);
+			this.handleGeneralizations(s);
+			this.handleRelation(s);
 		}
 		
 	}
@@ -89,10 +88,10 @@ public class UmlParser {
 				//this.handleClass(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("GENERALIZATION")){
-				this.handleGeneralizations(subFileContent.subList(i, subFileContent.size()));
+				//this.handleGeneralizations(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("RELATION")){
-				this.handleRelation(subFileContent.subList(i, subFileContent.size()));
+				//this.handleRelation(subFileContent.subList(i, subFileContent.size()));
 				break;
 			}else if(subFileContent.get(i).contains("AGGREGATION")){
 				this.handleAggregations(subFileContent.subList(i, subFileContent.size()));
@@ -103,7 +102,7 @@ public class UmlParser {
 	
 	private void handleClasses(Scanner scanner){
 		try{
-			scanner.findWithinHorizon(this.CLASSES, 0);	
+			scanner.findWithinHorizon(this.CLASSES, 0);
 			MatchResult results=scanner.match();
 			while(results.groupCount()>0){	
 				this.handleOneClass(results.group(0));
@@ -136,7 +135,6 @@ public class UmlParser {
 	}
 	
 	private void handleOneClass(String oneClass){
-				System.out.println(oneClass);
 				// on matche les attributs de la classe
 				Pattern patternAttrs=Pattern.compile(this.ATTRIBUTES);
 				Matcher matcherAttrs=patternAttrs.matcher(oneClass);
@@ -154,60 +152,41 @@ public class UmlParser {
 				if(MatcherMethodes.find()){
 					// des methodes existe pour cette classe 
 					// alors on doit les créer
-					classMethodes=this.populateMethodes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(MatcherMethodes.group().split(",")))));
+					
+					classMethodes=this.populateMethodes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(MatcherMethodes.group().split("\\r\\n")))));
 				}
+				List<String > classDefinition=new ArrayList<String>(Arrays.asList(oneClass.split("\\r\\n")));	
+				//on se debarasse de tout les espaces
+				classDefinition=this.removeWhiteSpaces(classDefinition);
+				String ClassName="";
+				//maintenant on dispose d'un array list contenant la description d'une class
+				ClassName=classDefinition.get(0).substring(6,classDefinition.get(0).length());
 				
-			
-			List<String > classDefinition=new ArrayList<String>(Arrays.asList(oneClass.split("\\r\\n")));	
-			//on se debarasse de tout les espaces
-			classDefinition=this.removeWhiteSpaces(classDefinition);
-			String ClassName="";
-			List<String> attributes=new ArrayList<String>();
-			List<String> methodes=new ArrayList<String>();
-			//maintenant on dispose d'un array list contenant la description d'une class
-			for(int i=0;i<classDefinition.size();i++){
-				if(classDefinition.get(i).contains("CLASS")){
-					ClassName=classDefinition.get(i).substring(i+6,classDefinition.get(i).length());
-				}else if(classDefinition.get(i).contains("ATTRIBUTES")){
-					int methodesIndex=classDefinition.indexOf("OPERATIONS");
-					attributes=classDefinition.subList(i+1, methodesIndex);
-				}else if(classDefinition.get(i).contains("OPERATIONS")){
-					 methodes=classDefinition.subList(i+1, classDefinition.size());
+				//on verifie si il existe d'attribut dupliqué dans la meme classe
+				if(classAttributes!=null  && this.checkDuplicates(classAttributes)){
+					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
+							,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+					this.ERROR_ENCOUNTERED=true;
+					return;	
 				}
+				//on verifie si il existe des duplications de methodes dans la meme classe
+				if(this.checkMethodeDuplicates(classMethodes)){
+					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
+							"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
+					this.ERROR_ENCOUNTERED=true;
+					return;
+				}
+				if(DataApi.classes.get(ClassName)!=null){
+					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+					this.ERROR_ENCOUNTERED=true;
+					return;
+				}
+				//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
+				DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
+				//ajout de la class dans le notificateur
+				//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
+				this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
 			
-			}
-			
-			//maintenant puisque on a extrait les attributs et les methode de la class
-			//on peut les peupler dans leurs classes respectives
-			//List<AttributeDao> classAttributes=this.populateAttributes(attributes);
-			//List<MethodeDao>classMethodes= (ArrayList<MethodeDao>)this.populateMethodes(methodes);
-			//on verifie si il existe d'attribut dupliqué dans la meme classe
-			if(classAttributes!=null  && this.checkDuplicates(classAttributes)){
-				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
-						,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-				this.ERROR_ENCOUNTERED=true;
-				return;
-				
-			}
-			//on verifie si il existe des duplications de methodes dans la meme classe
-			if(this.checkMethodeDuplicates(classMethodes)){
-				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
-						"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
-				this.ERROR_ENCOUNTERED=true;
-				return;
-			}
-			
-			if(DataApi.classes.get(ClassName)!=null){
-				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-				this.ERROR_ENCOUNTERED=true;
-				return;
-			}
-			//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
-			DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
-			//ajout de la class dans le notificateur
-			//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
-			this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
-		
 	}
 	
 	private List<MethodeDao> populateMethodes(List<String> methodes){
@@ -229,26 +208,40 @@ public class UmlParser {
 			}
 		}
 		
+		
 		return methodesList;
 		
 			
 	}
 	//methode qui s'occupe de la gestion des super class
 	//fait l'ajout a la liste des sous classe du parent 
-	private void handleGeneralizations(List<String> generalizations){
-		generalizations=this.removeWhiteSpaces(generalizations);
-		String generalizationClassName="";
+	private void handleGeneralizations(Scanner scanner){
+		MatchResult results=null;
+		try{
+		scanner.findWithinHorizon(this.GENERALIZATION, 0);
+			results=scanner.match();
+		}catch(Exception e){
+			
+		}
 		
-		for(String generalizationContent:generalizations){
-			if(generalizationContent.contains("GENERALIZATION")){
-				int generalizationNameIndex=generalizationContent.indexOf("GENERALIZATION");
-				generalizationClassName= generalizationContent.substring(generalizationNameIndex+15,generalizationContent.length());
-			}else if(generalizationContent.contains("SUBCLASSES")){
-				int subClassesIndex=generalizationContent.indexOf("SUBCLASSES");
-				List<String> subClassesContainer=Arrays.asList(
-						generalizationContent.substring(subClassesIndex+11,generalizationContent.length()).split(","));
+		String generalizationClassName="";
+		while(results!=null &&  results.groupCount()>0){
+			Pattern pattern=Pattern.compile(this.GENERALIZATIONHEADER);
+			Matcher matcher=pattern.matcher(results.group());
+			if(matcher.find()){
+				//get the parent class
+				generalizationClassName=matcher.group().substring(15,matcher.group().length());
+				
+			}else{
+				System.out.println("erreur en parsant les generalizations");
+			}
+			Pattern patternDefinition=Pattern.compile(this.SUBCLASSES);
+			Matcher matcherDefnition=patternDefinition.matcher(results.group());
+			if(matcherDefnition.find()){
 				//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
-				for (String sub:subClassesContainer){
+				List<String>subClassesDef=new ArrayList<String>(Arrays.asList((matcherDefnition.group().substring(11, matcherDefnition.group().length()).split(","))));
+				for (String sub:this.removeWhiteSpaces(subClassesDef)) {
+					System.out.println(sub);
 					ClassDao parentClass=DataApi.classes.get(generalizationClassName);
 					if(parentClass!=null){
 						parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
@@ -257,58 +250,78 @@ public class UmlParser {
 						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+generalizationClassName+" de la generalization n'est pas definie","Message D'erreur",JOptionPane.ERROR_MESSAGE);
 						this.ERROR_ENCOUNTERED=true;
 						break;
-					}
-					
+					}		
 				}
+			}
+			scanner.findWithinHorizon(this.GENERALIZATION, 0);
+			if(scanner.next()!=null){
+				results=scanner.match();
 				
 			}
 		}
+
 		
 	}
 	
 	//methode qui prend une description d'une relation et qui popule le hashMap des relations 
 	// ou le nom de la relation est la clé
-	private void handleRelation(List<String> relation){
-		
-		relation=this.removeWhiteSpaces(relation);
+	private void handleRelation(Scanner scanner){
+		MatchResult results=null;
 		RelationDao relationDescription = null;
-		String relationName="";
-		for(String rel:relation){
-			if(rel.contains("RELATION")){
-				relationName=rel.substring(rel.indexOf("RELATION")+9,rel.length()).trim();
-				relationDescription=new RelationDao(relationName);
-			}else if(rel.contains("CLASS")){
-				List<String>  relationBetween= new ArrayList<String>(Arrays.asList(rel.substring(rel.indexOf("CLASS")+6,rel.length()).split(" ")));
-				if(relationDescription!=null && relationBetween.size()>1){
-					//l'index 0 represente la class en relation 
-					//l'index 1 represente le type de la relation
-					ClassDao relatedClass=DataApi.classes.get(relationBetween.get(0));
-					if(relatedClass!=null){
-						//on verifie d'abord si la multiplicité de la relation est valide
-						if(!this.isValidMultiplcity(relationBetween.get(1).replace(",", ""))){
-							this.ERROR_ENCOUNTERED=true;
-							JOptionPane.showMessageDialog(FrameFactory.getFrame(),
-									"la multiplicité de la classe "+relatedClass.getName()+" n'est pas valide");
-							return;
-						}
-						relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
-						//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
-						DataApi.relations.put(relationName, relationDescription);
-						//ajout de la relation dans la classe qui fait partie de la relation
-						ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
-						relatedClass.addRelationToRelations(relationDescription);
-					}else{
-						System.out.println("tes");
-						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
-						this.ERROR_ENCOUNTERED=true;
-						return;
-					}	
-				}
-				
-			}
+		List<String> relation=new ArrayList<String>();
+		try{
+			String w=scanner.findWithinHorizon(this.RELATIONS, 0);
+			results=scanner.match();
+			
+		}catch(Exception e){
+			
 		}
-		//ajout des details de la relation 
-		relationDescription.setRelationDetails(String.join("\r\n", relation));
+		while(results.groupCount()>0){
+					System.out.println(results.group());
+					relation=new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
+					relation=this.removeWhiteSpaces(relation);
+					String relationName="";
+					for(String rel:relation){
+						if(rel.contains("RELATION")){
+							relationName=rel.substring(rel.indexOf("RELATION")+9,rel.length()).trim();
+							relationDescription=new RelationDao(relationName);
+						}else if(rel.contains("CLASS")){
+							List<String>  relationBetween= new ArrayList<String>(Arrays.asList(rel.substring(rel.indexOf("CLASS")+6,rel.length()).split(" ")));
+							if(relationDescription!=null && relationBetween.size()>1){
+								//l'index 0 represente la class en relation 
+								//l'index 1 represente le type de la relation
+								ClassDao relatedClass=DataApi.classes.get(relationBetween.get(0));
+								if(relatedClass!=null){
+									//on verifie d'abord si la multiplicité de la relation est valide
+									if(!this.isValidMultiplcity(relationBetween.get(1).replace(",", ""))){
+										this.ERROR_ENCOUNTERED=true;
+										JOptionPane.showMessageDialog(FrameFactory.getFrame(),
+												"la multiplicité de la classe "+relatedClass.getName()+" n'est pas valide");
+										return;
+									}
+									relationDescription.setClassRelation(new RelationType(relationBetween.get(1).replace(",", ""),relatedClass));
+									//ajout de la relation dans le hashMap de toutes le relation avec le nom en clé
+									DataApi.relations.put(relationName, relationDescription);
+									//ajout de la relation dans la classe qui fait partie de la relation
+									ClassDao relationBetweenClass=DataApi.classes.get(relationBetween.get(0));
+									relatedClass.addRelationToRelations(relationDescription);
+								}else{
+									JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+relationBetween.get(0)+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+									this.ERROR_ENCOUNTERED=true;
+									return;
+								}	
+							}
+							
+						}
+					}
+					//ajout des details de la relation 
+					relationDescription.setRelationDetails(String.join("\r\n", relation));
+					scanner.findWithinHorizon(this.RELATIONS, 0);
+					results=scanner.match();
+					
+		}
+		
+		
 	}
 	//methode qui fait la gestion des aggregation et qui popule le hashMap des aggregations
 	//avec le container comme clé 
