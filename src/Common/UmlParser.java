@@ -40,6 +40,7 @@ public class UmlParser {
 	private String RELATIONS="RELATION+\\s+(\\w*)+\\s+(ROLES[^;]*)";
 	private String SUBCLASSES="SUBCLASSES.*";
 	private String GENERALIZATIONHEADER="GENERALIZATION.*";
+	private String AGGREGATIONS="AGGREGATION+\\s+([^;])*";
 	
 	public UmlParser(File fileToParse){
 		this.fileToParse=fileToParse;
@@ -72,32 +73,9 @@ public class UmlParser {
 			this.handleClasses(s);
 			this.handleGeneralizations(s);
 			this.handleRelation(s);
+			this.handleAggregations(s);
 		}
 		
-	}
-	
-	private void filterEachSubContent(String subContent){
-		//on split sur les break lines de chaque element 
-		List<String> subFileContent = new ArrayList<String>(
-				Arrays.asList(subContent.split("\\r?\\n")));
-		
-		for(int i=0;i<subFileContent.size();i++){
-			//on eleve tout les espaces
-			subFileContent.set(i, subFileContent.get(i).trim());
-			if(subFileContent.get(i).contains("CLASS")){
-				//this.handleClass(subFileContent.subList(i, subFileContent.size()));
-				break;
-			}else if(subFileContent.get(i).contains("GENERALIZATION")){
-				//this.handleGeneralizations(subFileContent.subList(i, subFileContent.size()));
-				break;
-			}else if(subFileContent.get(i).contains("RELATION")){
-				//this.handleRelation(subFileContent.subList(i, subFileContent.size()));
-				break;
-			}else if(subFileContent.get(i).contains("AGGREGATION")){
-				this.handleAggregations(subFileContent.subList(i, subFileContent.size()));
-				break;
-			}		
-		}
 	}
 	
 	private void handleClasses(Scanner scanner){
@@ -273,11 +251,8 @@ public class UmlParser {
 			String w=scanner.findWithinHorizon(this.RELATIONS, 0);
 			results=scanner.match();
 			
-		}catch(Exception e){
-			
-		}
+		
 		while(results.groupCount()>0){
-					System.out.println(results.group());
 					relation=new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
 					relation=this.removeWhiteSpaces(relation);
 					String relationName="";
@@ -320,49 +295,72 @@ public class UmlParser {
 					results=scanner.match();
 					
 		}
+		}catch(Exception e){
+			
+		}
 		
 		
 	}
 	//methode qui fait la gestion des aggregation et qui popule le hashMap des aggregations
 	//avec le container comme clé 
-	private void handleAggregations(List<String> aggregations){
-		aggregations=this.removeWhiteSpaces(aggregations);
-		List<RelationType> aggregationRelations=new ArrayList<RelationType>();
-		String aggType="";
-		String aggregationContainerName="",aggregationContainerType="",aggregationPartsName="",aggregationPartsType="";
-		for(String aggregation:aggregations){
-			if(aggregation.contains("CONTAINER")){
-				aggType="CONTAINER";
-			}else if(aggregation.contains("PARTS")){
-				aggType="PARTS";
-			}else if(aggregation.contains("CLASS") && aggType=="CONTAINER"){
-				String aggContainerDesc=aggregation.substring(
-						aggregation.indexOf("CLASS")+6,aggregation.length());
-				 aggregationContainerName=aggContainerDesc.substring(0,aggContainerDesc.indexOf(" "));
-				 aggregationContainerType=aggContainerDesc.substring(aggContainerDesc.indexOf(" ")+1,aggContainerDesc.length());
-			}else if(aggregation.contains("CLASS") && aggType=="PARTS"){
-				String aggPartsDesc=aggregation.substring(
-						aggregation.indexOf("CLASS")+6,aggregation.length());
-				aggregationPartsName=aggPartsDesc.substring(0,aggPartsDesc.indexOf(" "));
-				aggregationPartsType=aggPartsDesc.substring(aggPartsDesc.indexOf(" ")+1,aggPartsDesc.length());
-				ClassDao aggregationPartClass=DataApi.classes.get(aggregationPartsName);
-				if(aggregationPartClass!=null){
-					aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
-				}else{
-					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
-					this.ERROR_ENCOUNTERED=true;
-					return;
+	private void handleAggregations(Scanner scanner){
+		
+		try{
+			scanner.findWithinHorizon(this.AGGREGATIONS, 0);
+			MatchResult results=scanner.match();
+			System.out.println(results.group());
+			while(results.groupCount()>0){
+				
+				List<String> aggregations = new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
+				aggregations=this.removeWhiteSpaces(aggregations);
+				List<RelationType> aggregationRelations=new ArrayList<RelationType>();
+				String aggType="";
+				String aggregationContainerName="",aggregationContainerType="",aggregationPartsName="",aggregationPartsType="";
+				for(String aggregation:aggregations){
+					if(aggregation.contains("CONTAINER")){
+						aggType="CONTAINER";
+					}else if(aggregation.contains("PARTS")){
+						aggType="PARTS";
+					}else if(aggregation.contains("CLASS") && aggType=="CONTAINER"){
+						String aggContainerDesc=aggregation.substring(
+								aggregation.indexOf("CLASS")+6,aggregation.length());
+						 aggregationContainerName=aggContainerDesc.substring(0,aggContainerDesc.indexOf(" "));
+						 aggregationContainerType=aggContainerDesc.substring(aggContainerDesc.indexOf(" ")+1,aggContainerDesc.length());
+					}else if(aggregation.contains("CLASS") && aggType=="PARTS"){
+						String aggPartsDesc=aggregation.substring(
+								aggregation.indexOf("CLASS")+6,aggregation.length());
+						aggregationPartsName=aggPartsDesc.substring(0,aggPartsDesc.indexOf(" "));
+						aggregationPartsType=aggPartsDesc.substring(aggPartsDesc.indexOf(" ")+1,aggPartsDesc.length());
+						ClassDao aggregationPartClass=DataApi.classes.get(aggregationPartsName);
+						if(aggregationPartClass!=null){
+							aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
+						}else{
+							JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+							this.ERROR_ENCOUNTERED=true;
+							return;
+						}
+						
+					}
+					
 				}
+				ClassDao container=DataApi.classes.get(aggregationContainerName);
+				AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);
+				DataApi.aggregations.put(container.getName(), aggregation);
+				
+				//ajout des details de l'aggregation
+				aggregation.setAggregationDetails(String.join("\r\n", aggregations));
+				scanner.findWithinHorizon(this.AGGREGATIONS, 0);
+				results=scanner.match();
 				
 			}
 			
+			
+			
+		}catch(Exception e){
+			
 		}
-		ClassDao container=DataApi.classes.get(aggregationContainerName);
-		AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);
-		DataApi.aggregations.put(container.getName(), aggregation);
 		
-		//ajout des details de l'aggregation
-		aggregation.setAggregationDetails(String.join("\r\n", aggregations));
+		
 		
 	}
 	
