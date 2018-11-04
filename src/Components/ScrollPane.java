@@ -35,7 +35,7 @@ import Notifiers.AttributesNotifier;
 
 public class ScrollPane extends JScrollPane implements Observer {
 
-	private String borderTitle;
+	private final String borderTitle;
 	private Features features;
 	private final int WIDTH=150;
 	private final int HEIGHT=150;
@@ -71,9 +71,6 @@ public class ScrollPane extends JScrollPane implements Observer {
 	
 	private void updateAttributes(Observable o){
 		// sera implementer une fois que les classes observées seront ajoutés
-		//JViewport viewport = this.getViewport(); 
-		//JTextArea textArea= (JTextArea)viewport.getView();
-		//textArea.setText("");
 		((DefaultListModel)this.list.getModel()).clear();
 		for (AttributeDao attr:((AttributesNotifier) o ).getAtrributes()){
 			((DefaultListModel)this.list.getModel()).addElement( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
@@ -89,7 +86,6 @@ public class ScrollPane extends JScrollPane implements Observer {
 					methode.parametersToString()+")"+"\r\n");
 			}
 		}
-		
 		
 	}
 	private void updateSubClasses(Observable o){
@@ -141,12 +137,8 @@ public class ScrollPane extends JScrollPane implements Observer {
 	public String getBorderTitle() {
 		return this.borderTitle;
 	}
-	public void setBorderTitle(String borderTitle) {
-		this.borderTitle = borderTitle;
-	}
-	
-	
-	
+
+		
 	public ShowDetailsListener getDetailsListener() {
 		return detailsListener;
 	}
@@ -170,6 +162,7 @@ public class ScrollPane extends JScrollPane implements Observer {
 			if (!e.getValueIsAdjusting()){
 	            JList source = (JList)e.getSource();
 	            String selected = source.getSelectedValue()!=null?source.getSelectedValue().toString():"";
+	            this.detailsNotifier.setUpdatedType(borderTitle);
 	            this.detailsNotifier.setSelectedValue(selected);
 	        }
 			

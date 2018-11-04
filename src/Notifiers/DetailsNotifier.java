@@ -8,13 +8,24 @@ public class DetailsNotifier extends Observable{
 
 	String selectedValue;
 	String ClassContainerName;
+	String updatedType;
 	public DetailsNotifier(){
 		super();
 	}
-
+	
 	public String getSelectedValue() {
 		return selectedValue;
 	}
+	
+	public String getUpdatedType() {
+		return updatedType;
+	}
+
+
+	public void setUpdatedType(String updatedType) {
+		this.updatedType = updatedType;
+	}
+
 
 	public void setSelectedValue(String selectedValue) {
 		this.selectedValue = selectedValue;

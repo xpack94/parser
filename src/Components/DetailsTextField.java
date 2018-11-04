@@ -41,6 +41,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 	public void update(Observable o, Object arg) {
 		//extraire la valeur 
 		String selectedValue=((DetailsNotifier)o).getSelectedValue();
+		String updatedType=((DetailsNotifier)o).getUpdatedType();
 		String details="";
 		if(selectedValue.contains(("R"))){
 			//afficher les details de la relations
@@ -58,8 +59,12 @@ public class DetailsTextField extends JTextArea implements Observer {
 			AggregationDao selectedAggregation=DataApi.aggregations.get(containerClass) != null?DataApi.aggregations.get(containerClass):null;
 			details=selectedAggregation.getAggregationDetails();
 			
-			
-			
+		}else if(updatedType=="Attributs"){
+			System.out.println("attrs");
+		}else if(updatedType=="Methodes"){
+			System.out.println("methodess");
+		}else if(updatedType=="Sous Classes"){
+			System.out.println("sous classes");
 		}
 		this.setText("");
 		this.append(details);

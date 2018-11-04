@@ -12,7 +12,8 @@ public class FrameFactory extends JFrame{
 		
 		this.setUndecorated(false);
 		this.setResizable(true);
-		this.setSize(740, 710);
+		this.setSize(1000, 750);
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
