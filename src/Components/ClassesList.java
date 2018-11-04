@@ -12,8 +12,9 @@ import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import ActionListeners.ClassSelectionListener;
 import Common.ClassDao;
 import Common.DataApi;
 import Common.Features;
@@ -119,6 +120,7 @@ public class ClassesList extends JList implements Observer{
 		
 	}
 	private void addSelectEvent(){
+		ClassSelectionListener listener=new ClassSelectionListener(this);
 		this.addListSelectionListener(this.classSelectionListener);
 	}
 	public AttributesNotifier getAttributesNotifier() {
@@ -152,6 +154,31 @@ public class ClassesList extends JList implements Observer{
 		this.detailsNotifier = detailsNotifier;
 	}
 
+	
+	private class ClassSelectionListener implements ListSelectionListener {
+
+		private ClassesList classesContainer;
+		
+		public ClassSelectionListener(ClassesList classesContainer){
+			this.classesContainer=classesContainer;
+		}
+		public void valueChanged(ListSelectionEvent e) {
+			if (!e.getValueIsAdjusting()){
+	            ClassesList source = (ClassesList)e.getSource();
+	            if(source.getSelectedValue()!=null){
+	            	String selected = source.getSelectedValue().toString();
+	            	this.classesContainer.updateChosenClass(selected);
+	            }
+	      
+	            
+	            
+	        }
+			
+		}
+
+		
+
+	}
 	
 	
 	

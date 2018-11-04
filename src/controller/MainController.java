@@ -12,7 +12,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import ActionListeners.ShowDetailsListener;
 import Common.Features;
 import Components.ClassesList;
 import Components.DetailsTextField;
@@ -98,16 +97,6 @@ public class MainController {
 		 ScrollPane scrollPaneThree=new ScrollPane("Sous Classes",componentThree);
 		 ScrollPane scrollPaneFour=new ScrollPane("Associations/Aggregations",componentFour);
 		 
-		 
-		 //ajout de composantes dans chaque scrollPane
-		 scrollPaneOne.setComponentInScrollPane(new JTextArea());
-		 scrollPaneTwo.setComponentInScrollPane(new JTextArea());
-		 scrollPaneThree.setComponentInScrollPane(new JTextArea());
-		 JList<String> innerList=new JList<String>(new DefaultListModel());
-		 ShowDetailsListener showDetailsListener=new ShowDetailsListener();
-		 innerList.addListSelectionListener(showDetailsListener);
-		 scrollPaneFour.setComponentInScrollPane(innerList);
-		 
 		 //initialiser les dimentions de chaque composante
 		 fileUploaderInput.setPreferredSize(new Dimension(250,15));
 		 scrollPaneOne.setPreferredSize(new Dimension(220,220));
@@ -148,7 +137,10 @@ public class MainController {
 		 classes.setRelationsNotifier(relationsNotifier);
 		 relationsNotifier.addObserver(scrollPaneFour);
 		 classes.setDetailsNotifier(detailsNotifier);
-		 showDetailsListener.setDetailsNotifier(detailsNotifier);
+		 scrollPaneOne.setDetailsListener(detailsNotifier);
+		 scrollPaneTwo.setDetailsListener(detailsNotifier);
+		 scrollPaneThree.setDetailsListener(detailsNotifier);
+		 scrollPaneFour.setDetailsListener(detailsNotifier);
 		 detailsNotifier.addObserver(detailsField);
 		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
 		 inputFileNotifier.addObserver(fileUploaderInput);

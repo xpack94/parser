@@ -14,8 +14,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
+import Notifiers.DetailsNotifier;
 import Notifiers.MethodeNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
@@ -35,11 +39,16 @@ public class ScrollPane extends JScrollPane implements Observer {
 	private Features features;
 	private final int WIDTH=150;
 	private final int HEIGHT=150;
+	private final JList<String> list;
+	private ShowDetailsListener detailsListener=new ShowDetailsListener();
 	//prend en parametre une classe observée 
 	public ScrollPane(String borderTitle,Features features){
 			super();
 			this.borderTitle=borderTitle;
 			this.features=features;
+			this.list=new JList<String>(new DefaultListModel());
+			this.list.addListSelectionListener(detailsListener);
+			this.setComponentInScrollPane(this.list);
 			this.setBorder(new TitledBorder(this.borderTitle));
 			
 	}	
@@ -62,22 +71,21 @@ public class ScrollPane extends JScrollPane implements Observer {
 	
 	private void updateAttributes(Observable o){
 		// sera implementer une fois que les classes observées seront ajoutés
-		JViewport viewport = this.getViewport(); 
-		JTextArea textArea= (JTextArea)viewport.getView();
-		textArea.setText("");
+		//JViewport viewport = this.getViewport(); 
+		//JTextArea textArea= (JTextArea)viewport.getView();
+		//textArea.setText("");
+		((DefaultListModel)this.list.getModel()).clear();
 		for (AttributeDao attr:((AttributesNotifier) o ).getAtrributes()){
-			textArea.append( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
+			((DefaultListModel)this.list.getModel()).addElement( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
 		}
 	}
 	private  void updateMethodes(Observable o){
-		JViewport viewport = this.getViewport(); 
-		JTextArea textArea= (JTextArea)viewport.getView();
-		textArea.setText("");
+		((DefaultListModel)this.list.getModel()).clear();
 		if(((MethodeNotifier) o).getMethodes().size()==0){
-			textArea.append("aucune Methode trouvée");
+			((DefaultListModel)this.list.getModel()).addElement("aucune Methode trouvée");
 		}else{
 			for(MethodeDao methode:((MethodeNotifier) o).getMethodes()){
-				textArea.append(methode.getReturnType()+" "+methode.getMethodeName()+"("+
+				((DefaultListModel)this.list.getModel()).addElement(methode.getReturnType()+" "+methode.getMethodeName()+"("+
 					methode.parametersToString()+")"+"\r\n");
 			}
 		}
@@ -85,14 +93,12 @@ public class ScrollPane extends JScrollPane implements Observer {
 		
 	}
 	private void updateSubClasses(Observable o){
-		JViewport viewport = this.getViewport(); 
-		JTextArea textArea= (JTextArea)viewport.getView();
-		textArea.setText("");
+		((DefaultListModel)this.list.getModel()).clear();
 		if(((SubClassesNotifier) o).getSubClasses().size()==0){
-			textArea.append("aucune sous classe");
+			((DefaultListModel)this.list.getModel()).addElement("aucune sous classe");
 		}else{
 			for(ClassDao subClass:((SubClassesNotifier)o).getSubClasses()){
-				textArea.append(subClass.getName()+"\r\n");
+				((DefaultListModel)this.list.getModel()).addElement(subClass.getName()+"\r\n");
 			}
 		}
 	}
@@ -138,4 +144,44 @@ public class ScrollPane extends JScrollPane implements Observer {
 	public void setBorderTitle(String borderTitle) {
 		this.borderTitle = borderTitle;
 	}
+	
+	
+	
+	public ShowDetailsListener getDetailsListener() {
+		return detailsListener;
+	}
+	public void setDetailsListener(DetailsNotifier notifier){
+		this.detailsListener.setDetailsNotifier(notifier);
+	}
+
+
+	private class ShowDetailsListener implements ListSelectionListener{
+		
+		
+		private DetailsNotifier detailsNotifier;
+		public ShowDetailsListener(DetailsNotifier detailsNotifier){
+			this.detailsNotifier=detailsNotifier;
+		}
+		public ShowDetailsListener(){
+			
+		}
+		
+		public void valueChanged(ListSelectionEvent e) {
+			if (!e.getValueIsAdjusting()){
+	            JList source = (JList)e.getSource();
+	            String selected = source.getSelectedValue()!=null?source.getSelectedValue().toString():"";
+	            this.detailsNotifier.setSelectedValue(selected);
+	        }
+			
+		}
+		public void setDetailsNotifier(DetailsNotifier detailsNotifier){
+			this.detailsNotifier=detailsNotifier;
+		}
+
+		
+		
+		
+	}
+	
+	
 }

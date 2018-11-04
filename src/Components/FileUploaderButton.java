@@ -16,12 +16,24 @@ import javax.swing.JOptionPane;
 
 import controller.FrameFactory;
 
-
-import ActionListeners.UploadFileListener;
 import Common.Features;
 import Common.UmlParser;
 import Notifiers.ClassNotifier;
 import Notifiers.InputFileNotifier;
+
+
+
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import controller.FrameFactory;
+
+import Components.FileUploaderButton;
 
 
 
@@ -58,7 +70,8 @@ public class FileUploaderButton extends JButton implements Observer{
 	
 	private void addClickEvent(){
 		//ajout de l'action on click sur le button 
-		this.addActionListener(this.uploadFileListener);
+		UploadFileListener listener=new UploadFileListener(this);
+		this.addActionListener(listener);
 	}
 	
 	public Features getComponentFeatures(){
@@ -80,32 +93,6 @@ public class FileUploaderButton extends JButton implements Observer{
 			return;
 		}
 		Scanner s=null;
-		/*try {
-			s=new Scanner(readFile);
-			
-				String classes =s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
-				MatchResult result=s.match();
-				while(result.groupCount()>0){
-				System.out.println(result.group(0));
-				try{
-					s.findWithinHorizon("\\s+(CLASS){1}\\s+(\\w*)+\\s+(ATTRIBUTES[^;]*)",0);
-					result=s.match();
-				}catch(Exception e){
-					break;
-				}
-				
-				
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			if(s!=null){
-				s.close();
-				System.out.println("closed");
-			}
-			
-		}*/
 		this.umlParser.setClassNotifier(this.getClassNotifier());
 		//maintenant en parse le fichier lu 
 		this.umlParser.parseFile(readFile);
@@ -127,6 +114,39 @@ public class FileUploaderButton extends JButton implements Observer{
 	public void setInputFileNotifier(InputFileNotifier inputFileNotifier) {
 		this.inputFileNotifier = inputFileNotifier;
 	}
+	
+	
+	
+	
+
+	private class UploadFileListener implements ActionListener{
+		private FileUploaderButton fileUploaderButton;
+		
+		
+		public UploadFileListener(FileUploaderButton fileUploaderButton){
+			this.fileUploaderButton=fileUploaderButton;
+		}
+		
+		//la methode qui s'occupe d'afficher le fileChooser et retourne le fichier selectionné
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fileChooser =new JFileChooser();
+			int returnVal = fileChooser.showOpenDialog( (Component) e.getSource());
+			    if (returnVal == JFileChooser.APPROVE_OPTION){ ;
+			        File file = fileChooser.getSelectedFile();
+			        try {
+			          this.fileUploaderButton.setReadFile(file);
+			        } catch (Exception ex) {
+			        	JOptionPane.showMessageDialog(FrameFactory.getFrame(), "probleme d'acces au fichier"+file.getAbsolutePath(),
+			        			"Erreur",JOptionPane.ERROR_MESSAGE);
+			        }
+			    } 
+			    else {
+			        System.out.println("access au fichier annulé.");
+			    }       
+			}   
+
+	}
+
 	
 	
 }
