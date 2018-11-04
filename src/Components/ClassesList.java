@@ -90,18 +90,27 @@ public class ClassesList extends JList implements Observer{
 	public void setClassNotifier(ClassNotifier classNotifier) {
 		this.classNotifier = classNotifier;
 	}
-	public void updateChosenClass(String selectedClass){
-		//cette classe est appelé a chauqe fois qu'un element de la liste est choisit
-		this.SelectedClass=selectedClass;
-		//on recupere la definition de la classe choisit et on notifie les observateurs de chaque composante
-		ClassDao chosenClass=DataApi.classes.get(selectedClass);
-		List<AttributeDao> attributesOfClass=chosenClass.getAttributes();
-		this.attributesNotifier.setAtrributes(attributesOfClass);
-		List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
-		this.methodesNotifier.setMethodes(methodesOfClass);
-		this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
-		this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
-		this.detailsNotifier.setClassContainerName(selectedClass);
+	public void updateChosenClass(String selectedItem){
+		String componentTitle=this.getBorderTitle();
+		if(componentTitle.equals("classes")){
+			//cette classe est appelé a chauqe fois qu'un element de la liste est choisit
+			this.SelectedClass=selectedItem;
+			//on recupere la definition de la classe choisit et on notifie les observateurs de chaque composante
+			ClassDao chosenClass=DataApi.classes.get(selectedItem);
+			List<AttributeDao> attributesOfClass=chosenClass.getAttributes();
+			this.attributesNotifier.setAtrributes(attributesOfClass);
+			List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
+			this.methodesNotifier.setMethodes(methodesOfClass);
+			this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
+			this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
+			this.detailsNotifier.setClassContainerName(selectedItem);
+		}else if(componentTitle.equals("metriques")){
+			// les elements de la liste des metrique ont été cliqué
+			this.detailsNotifier.setUpdatedType("metrics");
+			this.detailsNotifier.setSelectedValue(selectedItem);
+			
+		}
+		
 	}
 	
 	public void update(Observable o, Object arg) {

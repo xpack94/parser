@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -13,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import Common.Features;
+import Common.Metrics;
 import Components.ClassesList;
 import Components.DetailsTextField;
 import Components.FileUploaderButton;
@@ -35,6 +39,12 @@ public class MainController {
 		this.init();
 	}
 	
+	private void addEelemnts(DefaultListModel list){
+		
+		for(String metric:new Metrics().getMetrics()){
+			list.addElement(metric);
+		}
+	}
 	private void init(){
 		 //final PanelContoller panel=new PanelContoller(new GridBagLayout());
 		 FileUploaderButton fileUploaderButton= new FileUploaderButton();
@@ -43,6 +53,8 @@ public class MainController {
 		 DefaultListModel listModel = new DefaultListModel();
 		 ClassesList classes=new ClassesList(listModel, "classes");
 		 DefaultListModel metrics = new DefaultListModel();
+		 //l'ajout de toutes les metriques dans la liste
+		 this.addEelemnts(metrics);
 		 ClassesList metricsList=new ClassesList(metrics,"metriques");
 		 JPanel attrPanel = new JPanel();
 		 JPanel methodesPanel = new JPanel();
@@ -152,6 +164,7 @@ public class MainController {
 		 detailsNotifier.addObserver(detailsField);
 		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
 		 inputFileNotifier.addObserver(fileUploaderInput);
+		 metricsList.setDetailsNotifier(detailsNotifier);
 		 
 	}
 

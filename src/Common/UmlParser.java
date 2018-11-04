@@ -219,7 +219,7 @@ public class UmlParser {
 				//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
 				List<String>subClassesDef=new ArrayList<String>(Arrays.asList((matcherDefnition.group().substring(11, matcherDefnition.group().length()).split(","))));
 				for (String sub:this.removeWhiteSpaces(subClassesDef)) {
-					System.out.println(sub);
+
 					ClassDao parentClass=DataApi.classes.get(generalizationClassName);
 					if(parentClass!=null){
 						parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));

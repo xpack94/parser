@@ -12,6 +12,7 @@ import Common.AggregationDao;
 import Common.ClassDao;
 import Common.DataApi;
 import Common.Features;
+import Common.Metrics;
 import Common.RelationDao;
 import Common.RelationType;
 import Notifiers.DetailsNotifier;
@@ -43,7 +44,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 		String selectedValue=((DetailsNotifier)o).getSelectedValue();
 		String updatedType=((DetailsNotifier)o).getUpdatedType();
 		String details="";
-		if(selectedValue.contains(("R"))){
+		if(selectedValue.contains(("R")) && updatedType==null){
 			//afficher les details de la relations
 			String relationName=selectedValue.substring(selectedValue.indexOf(")")+1,selectedValue.length()).trim();
 			RelationDao relation=DataApi.relations.get(relationName);
@@ -51,7 +52,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 				details=relation.getRelationDetails();
 			}
 			
-		}else if(selectedValue.contains("A")){
+		}else if(selectedValue.contains("A") && updatedType==null){
 			//afficher les details de l'aggregation
 			String containerClass=((DetailsNotifier)o).getClassContainerName();
 			String selectedAggregationPart=((DetailsNotifier)o).getSelectedValue();
@@ -59,15 +60,25 @@ public class DetailsTextField extends JTextArea implements Observer {
 			AggregationDao selectedAggregation=DataApi.aggregations.get(containerClass) != null?DataApi.aggregations.get(containerClass):null;
 			details=selectedAggregation.getAggregationDetails();
 			
-		}else if(updatedType=="Attributs"){
+		}else if(updatedType.equals("Attributs")){
 			System.out.println("attrs");
-		}else if(updatedType=="Methodes"){
+		}else if(updatedType.equals("Methodes")){
 			System.out.println("methodess");
-		}else if(updatedType=="Sous Classes"){
+		}else if(updatedType.equals("Sous Classes")){
 			System.out.println("sous classes");
+		}else if(updatedType.equals("metrics") && selectedValue!=null){
+			Metrics metrics=new Metrics("test");
+			details=metrics.getDefinitions().get(selectedValue);
 		}
 		this.setText("");
 		this.append(details);
 		
 	}
+	
+	private void displayDefinition(String metric){
+		
+		
+		
+	}
+	
 }
