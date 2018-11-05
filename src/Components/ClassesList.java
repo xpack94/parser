@@ -25,6 +25,7 @@ import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.MetricsNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
@@ -45,6 +46,7 @@ public class ClassesList extends JList implements Observer{
 	private RelationsNotifier relationsNotifier;
 	private DetailsNotifier detailsNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
+	private MetricsNotifier metricsNotifier;
 	
 	
 	public ClassesList(ListModel data,String borderTitle,Features features){
@@ -104,6 +106,7 @@ public class ClassesList extends JList implements Observer{
 			this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
 			this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
 			this.detailsNotifier.setClassContainerName(selectedItem);
+			this.metricsNotifier.setSelectedClass(this.SelectedClass);
 		}else if(componentTitle.equals("metriques")){
 			// les elements de la liste des metrique ont été cliqué
 			this.detailsNotifier.setUpdatedType("metrics");
@@ -112,6 +115,7 @@ public class ClassesList extends JList implements Observer{
 		}
 		
 	}
+	
 	
 	public void update(Observable o, Object arg) {
 		//on met a jours la liste des classes a chaque notification
@@ -164,6 +168,14 @@ public class ClassesList extends JList implements Observer{
 	}
 
 	
+	public MetricsNotifier getMetricsNotifier() {
+		return metricsNotifier;
+	}
+	public void setMetricsNotifier(MetricsNotifier metricsNotifier) {
+		this.metricsNotifier = metricsNotifier;
+	}
+
+
 	private class ClassSelectionListener implements ListSelectionListener {
 
 		private ClassesList classesContainer;
@@ -172,6 +184,7 @@ public class ClassesList extends JList implements Observer{
 			this.classesContainer=classesContainer;
 		}
 		public void valueChanged(ListSelectionEvent e) {
+			
 			if (!e.getValueIsAdjusting()){
 	            ClassesList source = (ClassesList)e.getSource();
 	            if(source.getSelectedValue()!=null){

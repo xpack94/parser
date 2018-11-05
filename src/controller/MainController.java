@@ -19,7 +19,7 @@ import Common.Features;
 import Common.Metrics;
 import Components.ClassesList;
 import Components.DetailsTextField;
-import Components.FileUploaderButton;
+import Components.ButtonTrigger;
 import Components.FileUploaderInput;
 import Components.ScrollPane;
 import Notifiers.AttributesNotifier;
@@ -27,6 +27,7 @@ import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
 import Notifiers.InputFileNotifier;
 import Notifiers.MethodeNotifier;
+import Notifiers.MetricsNotifier;
 import Notifiers.RelationsNotifier;
 import Notifiers.SubClassesNotifier;
 
@@ -39,22 +40,15 @@ public class MainController {
 		this.init();
 	}
 	
-	private void addEelemnts(DefaultListModel list){
-		
-		for(String metric:new Metrics().getMetrics()){
-			list.addElement(metric);
-		}
-	}
 	private void init(){
 		 //final PanelContoller panel=new PanelContoller(new GridBagLayout());
-		 FileUploaderButton fileUploaderButton= new FileUploaderButton();
+		 ButtonTrigger fileUploaderButton= new ButtonTrigger("charger fichier");
 		 FileUploaderInput fileUploaderInput = new FileUploaderInput("entrer un fichier ");
 		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
 		 ClassesList classes=new ClassesList(listModel, "classes");
+		 ButtonTrigger metricsLoader=new ButtonTrigger("Calculer Metriques");
 		 DefaultListModel metrics = new DefaultListModel();
-		 //l'ajout de toutes les metriques dans la liste
-		 this.addEelemnts(metrics);
 		 ClassesList metricsList=new ClassesList(metrics,"metriques");
 		 JPanel attrPanel = new JPanel();
 		 JPanel methodesPanel = new JPanel();
@@ -72,7 +66,7 @@ public class MainController {
 				 new Insets(0,0,0,0),0,0,0,0);
 		 
 		 //caracteristiques de l'input
-		 Features fileUploaderInputFeatures=new Features(1,0,4,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
+		 Features fileUploaderInputFeatures=new Features(1,0,3,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
 				 new Insets(0,15,0,0),0,10,1,0);
 		 
 		 //caracteristiques du container des classes
@@ -98,6 +92,10 @@ public class MainController {
 		 Features DetailsFeatures =new Features(2,3,2,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.CENTER,
 				 new Insets(0, 0, 15, 0),0,0,1,0);
 		
+		 //caracteristiques du bouton des metrriques
+		 Features metricsButtonFeatures =new Features(4,0,1,1,GridBagConstraints.RELATIVE,GridBagConstraints.CENTER,
+				 new Insets(0, 15, 0, 0),0,0,0,0);
+		 
 		 //caracteristiques des metriques
 		 Features metricsFeatures =new Features(4,1,1,3,GridBagConstraints.VERTICAL,GridBagConstraints.CENTER,
 				 new Insets(15, 15, 0, 0),0,0,0,0);
@@ -107,6 +105,7 @@ public class MainController {
 		 fileUploaderInput.setComponentFeatures(fileUploaderInputFeatures);
 		 classes.setFeatures(classListFeatures);
 		 detailsField.setFeatures(DetailsFeatures);
+		 metricsLoader.setFeatures(metricsButtonFeatures);
 		 metricsList.setFeatures(metricsFeatures);
 		 
 		 //instanciation des quatres composante du milieu 
@@ -122,6 +121,7 @@ public class MainController {
 		 scrollPaneThree.setPreferredSize(new Dimension(200,200));
 		 scrollPaneFour.setPreferredSize(new Dimension(200,200)); 
 		 detailsField.setPreferredSize(new Dimension(300,150));
+		 metricsLoader.setPreferredSize(new Dimension(180,25));
 		 metricsList.setPreferredSize(new Dimension(155,400));
 		 
 		 //l'ajout des composantes au panel
@@ -129,11 +129,12 @@ public class MainController {
 		 panel.addComponent(fileUploaderInput, fileUploaderInput.getComponentFeatures());
 		 panel.addComponent(classes, classes.getFeatures());
 		 panel.addComponent(scrollPaneOne,scrollPaneOne.getFeatures() );
-		panel.addComponent(scrollPaneTwo,scrollPaneTwo.getFeatures() );
+		 panel.addComponent(scrollPaneTwo,scrollPaneTwo.getFeatures() );
 		 panel.addComponent(scrollPaneThree,scrollPaneThree.getFeatures() );
 		 panel.addComponent(scrollPaneFour,scrollPaneFour.getFeatures() );
 		 panel.addComponent(detailsField, detailsField.getFeatures());
-		panel.addComponent(metricsList, metricsList.getFeatures());
+		 panel.addComponent(metricsLoader, metricsLoader.getFeatures());
+		 panel.addComponent(metricsList, metricsList.getFeatures());
 		 
 		 //creation des observateurs
 		 ClassNotifier classNotifier=new ClassNotifier();
@@ -143,6 +144,7 @@ public class MainController {
 		 RelationsNotifier relationsNotifier=new RelationsNotifier();
 		 DetailsNotifier detailsNotifier=new DetailsNotifier();
 		 InputFileNotifier inputFileNotifier=new InputFileNotifier();
+		 MetricsNotifier metricsNotifier=new MetricsNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
@@ -165,6 +167,10 @@ public class MainController {
 		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
 		 inputFileNotifier.addObserver(fileUploaderInput);
 		 metricsList.setDetailsNotifier(detailsNotifier);
+		 metricsLoader.setAssociatedList(metricsList);
+		 metricsLoader.setClassNotifier(classNotifier);
+		 metricsNotifier.addObserver(metricsLoader);
+		 classes.setMetricsNotifier(metricsNotifier);
 		 
 	}
 
