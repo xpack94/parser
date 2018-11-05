@@ -187,6 +187,7 @@ public class ButtonTrigger extends JButton implements Observer{
 							for(String metric:metrics.getMetrics()){
 								
 								list.addElement(metric+"="+metrics.metricsCalculator(this.button.selectedClass, metric));
+								metrics.generateCsv();
 							}
 							this.button.associatedList.setModel(list);
 						}

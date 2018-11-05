@@ -1,5 +1,8 @@
 package Common;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -215,7 +218,11 @@ public class Metrics {
 				numberOfAttrs+=methode.getParameters().size();
 			}
 		}
-		float finalAna=(float)numberOfAttrs/classToCalculateFor.getMethodes().size();
+		float finalAna=0;
+		if(numberOfAttrs>0){
+			finalAna=(float)numberOfAttrs/classToCalculateFor.getMethodes().size();
+		}
+		
 		return  Float.parseFloat(new DecimalFormat("##.##").format(finalAna));
 	}
 	
@@ -275,6 +282,64 @@ public class Metrics {
 			}
 		}//
 		return numberOfOverridenMethoes;
+	}
+	
+	
+	public void generateCsv(){
+		try {
+			PrintWriter writer = new PrintWriter("metrics.csv", "UTF-8");
+			List<ClassDao> classes=new ArrayList<ClassDao>();
+			String row="       ,";
+			for(String c:DataApi.classes.keySet()){
+				classes.add(DataApi.classes.get(c));
+				row+=DataApi.classes.get(c).getName()+",";
+			}
+			row=row.substring(0,row.length()-1);
+			row+="\r\n";
+			row+=this.buildCsv(DataApi.classes.keySet().size()-1,classes);
+			writer.print(row);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private String buildCsv(int size,List<ClassDao> classes){
+		String row="";
+		for(String metricToCalculate:this.metrics){
+			row+=metricToCalculate+",";
+			for(ClassDao relatedClass:classes){
+				row+=this.metricsCalculator(relatedClass.getName(), metricToCalculate)+",";
+			}
+			row=row.substring(0,row.length()-1); // on supprime la derniere virgule
+			row+="\r\n";
+		}
+		return row;
+		
+		
+	}
+	private String generateOneColumn(int index,ClassDao relatedClass){
+		 String valueToReturn="";
+		 String className=relatedClass.getName();
+		 System.out.println(relatedClass.getName());
+		 valueToReturn+=className+"\r\n"+
+				 		this.calculateAna(className)+"\r\n"+
+				 		this.calculateNom(className)+"\r\n"+
+				 		this.calculateNoa(className)+"\r\n"+
+				 		this.calculateItc(className)+"\r\n"+
+				 		this.calculateEtc(className)+"\r\n"+
+				 		this.calculateCac(className)+"\r\n"+
+				 		this.calculateDit(className)+"\r\n"+
+				 		this.calculateCld(className)+"\r\n"+
+				 		this.calculateNoc(className)+"\r\n"+
+				 		this.calculateNod(className)+"\r\n";
+		 
+		return valueToReturn;
 	}
 	
 	public List<String> getMetrics() {
