@@ -1,5 +1,6 @@
 package Common;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -214,15 +215,68 @@ public class Metrics {
 				numberOfAttrs+=methode.getParameters().size();
 			}
 		}
-		return numberOfAttrs;
+		float finalAna=(float)numberOfAttrs/classToCalculateFor.getMethodes().size();
+		return  Float.parseFloat(new DecimalFormat("##.##").format(finalAna));
 	}
 	
 	private float calculateNom(String relatedClass){
-	 return 0;	
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int nom=0;
+		if(classToCalculateFor!=null){
+			nom+=classToCalculateFor.getMethodes().size();
+			while(classToCalculateFor.getParentClass()!=null){
+				List<MethodeDao> methodes=classToCalculateFor.getMethodes();
+				classToCalculateFor=classToCalculateFor.getParentClass();
+				int numberOfOverridenMethodes=this.doesOverride(classToCalculateFor.getMethodes(),methodes);
+				nom+=classToCalculateFor.getMethodes().size()-numberOfOverridenMethodes;
+			}
+		}
+		
+		
+	 return nom;	
 	}
 	
+	/**
+	 * @param methodes: une liste d'elements  du type MethodeDto
+	 * @param currentMethodes: une liste d'elements du type MethodeDto
+	 * @return int qui correspond au nombre de methode qui sont redifinie localement dans une sous classe  
+	 * 
+	 * */
+	private int doesOverride(List<MethodeDao> methodes,List<MethodeDao> currentMethodes){
+		int numberOfOverridenMethoes=0;
+		List<MethodeDao> methodeToUse=null;
+		List<MethodeDao> otherMethodes=null;
+		if(methodes.size()>=currentMethodes.size()){
+			methodeToUse=currentMethodes;
+			otherMethodes=methodes;
+		}else{
+			methodeToUse=methodes;
+			otherMethodes=currentMethodes;
+		}
+		for(int i =0;i<methodeToUse.size();i++){
+			if(otherMethodes.get(i).getMethodeName().equals(methodeToUse.get(i).getMethodeName())
+					&& currentMethodes.get(i).getReturnType().equals(methodes.get(i).getReturnType())){
+				List<AttributeDao> methodeParams=methodeToUse.get(i).getParameters();
+				List<AttributeDao> currentMethodeParams=otherMethodes.get(i).getParameters();
+				if(methodeParams.size()==currentMethodeParams.size()){
+					int j=0;
+					for(j=0;j<methodeParams.size();j++){
+						//on verifie si il ont le meme ordre et types des arguments
+						if(!methodeParams.get(j).getAttributeName().equals(currentMethodeParams.get(j).getAttributeName()) ||
+								!methodeParams.get(j).getAttributeType().equals(currentMethodeParams.get(j).getAttributeType())){
+							break;
+						}
+					}
+					if(j==methodeParams.size()){
+						numberOfOverridenMethoes++;
+					}
+				}
+				
+			}
+		}//
+		return numberOfOverridenMethoes;
+	}
 	
-
 	public List<String> getMetrics() {
 		return metrics;
 	}
