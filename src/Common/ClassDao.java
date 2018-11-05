@@ -10,6 +10,7 @@ public class ClassDao {
 	private List<MethodeDao> methodes;
 	private List<ClassDao> subClasses;
 	private List<RelationDao> relations;
+	private ClassDao parentClass;
 	
 	public ClassDao(String name,List<AttributeDao> classAttributes,List<MethodeDao> classMethodes){
 		this.attributes=classAttributes;
@@ -53,6 +54,7 @@ public class ClassDao {
 	
 	public void setSubClassToParent(ClassDao subClass){
 		this.subClasses.add(subClass);
+		
 	}
 
 	public List<RelationDao> getRelations() {
@@ -66,5 +68,14 @@ public class ClassDao {
 	public void addRelationToRelations(RelationDao relation){
 		this.relations.add(relation);
 	}
+
+	public ClassDao getParentClass() {
+		return parentClass;
+	}
+
+	public void setParentClass(ClassDao parentClass) {
+		this.parentClass = parentClass;
+	}
+	
 	
 }

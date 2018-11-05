@@ -2,8 +2,12 @@ package Common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.crypto.Data;
 
 public class Metrics {
 
@@ -40,8 +44,7 @@ public class Metrics {
 	
 	
 	public String metricsCalculator(String relatedClass,String metricToCalculate){
-		String result="";
-		System.out.println("metric to calculate is "+relatedClass);
+		float result=0;
 		switch (metricToCalculate){
 			case"ANA":
 				result=this.calculateAna(relatedClass);
@@ -75,50 +78,122 @@ public class Metrics {
 				break;
 		}
 		
-		return result;
+		return ""+result;
 	}
 	
 
 	
-	private String calculateNod(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateNoc(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateCld(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateDit(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateCac(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateEtc(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateItc(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateNoa(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private String calculateAna(String relatedClass){
+	private float calculateNod(String relatedClass) {
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		if(classToCalculateFor!=null){
+			//on calcule le nombre de classe directes et indirectes
+			for(ClassDao subClass:classToCalculateFor.getSubClasses()){
+				if(classToCalculateFor.getSubClasses().size()==0){
+					return 0;
+				}else{
+					return classToCalculateFor.getSubClasses().size()+this.calculateNod(subClass.getName());
+				}
+			}	
+		}
 		
-		return "";
+		return 0;
+	}
+	private float calculateNoc(String relatedClass) {
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		if(classToCalculateFor!=null){
+			// on calcule le NOC de la classe choisit
+			return classToCalculateFor.getSubClasses().size();
+		}
+		return 0;
+	}
+	private float calculateCld(String relatedClass2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	private float calculateDit(String relatedClass2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	private float calculateCac(String relatedClass2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	private float calculateEtc(String relatedClass) {
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int etc=0;
+		if(classToCalculateFor!=null){
+			for(String key:DataApi.classes.keySet()){
+				// on s'assure qu'on inclut pas la classe elle meme
+				ClassDao classFound=DataApi.classes.get(key);
+				if(classFound!=classToCalculateFor){
+					for (MethodeDao methode:classFound.getMethodes()){
+						for(AttributeDao attr:methode.getParameters()){
+							if(attr.getAttributeType().trim().equals(classToCalculateFor.getName())){
+								etc++;
+							}
+						}
+						
+						
+					}
+				}
+			}
+			
+		}
+		
+		return etc;
 	}
 	
-	private String calculateNom(String relatedClass){
-	 return null;	
+	private float calculateItc(String relatedClass) {
+		List<String> primitiveTypes=new ArrayList<String>(Arrays.asList("integer","int","float","double","char","byte","short",
+				"long","string","boolean","bool"));
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int itc=0;
+		if(classToCalculateFor!=null){
+			for(MethodeDao methode:classToCalculateFor.getMethodes()){
+				for(AttributeDao attr:methode.getParameters()){
+					if(primitiveTypes.indexOf(attr.getAttributeType().toLowerCase())==-1){
+						//le type trouvé n'est pas un type primitive
+						if(DataApi.classes.get(attr.getAttributeType().trim())!=null){
+							//le type correspond a un type d'une classe du diagrame
+							itc++;
+						}
+					}
+				}
+				
+			}
+		}
+		
+		return itc;
+	}
+	private float calculateNoa(String relatedClass) {
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		if(classToCalculateFor!=null){
+			if(classToCalculateFor.getParentClass()!=null){
+				return classToCalculateFor.getAttributes().size()+this.calculateNoa(classToCalculateFor.getParentClass().getName());
+				
+			}else{
+				return classToCalculateFor.getAttributes().size();
+			}
+			
+		}
+		return 0;
+	}
+	
+	
+	private float calculateAna(String relatedClass){
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int numberOfAttrs=0;
+		if(classToCalculateFor!=null){
+			
+			for(MethodeDao methode:classToCalculateFor.getMethodes()){
+				numberOfAttrs+=methode.getParameters().size();
+			}
+		}
+		return numberOfAttrs;
+	}
+	
+	private float calculateNom(String relatedClass){
+	 return 0;	
 	}
 	
 	

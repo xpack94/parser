@@ -196,47 +196,53 @@ public class UmlParser {
 	private void handleGeneralizations(Scanner scanner){
 		MatchResult results=null;
 		try{
-		scanner.findWithinHorizon(this.GENERALIZATION, 0);
+			scanner.findWithinHorizon(this.GENERALIZATION, 0);
 			results=scanner.match();
+		
+			String generalizationClassName="";
+			while(results!=null &&  results.groupCount()>0){
+				Pattern pattern=Pattern.compile(this.GENERALIZATIONHEADER);
+				Matcher matcher=pattern.matcher(results.group());
+				if(matcher.find()){
+					//get the parent class
+					generalizationClassName=matcher.group().substring(15,matcher.group().length());
+					
+				}else{
+					System.out.println("erreur en parsant les generalizations");
+				}
+				Pattern patternDefinition=Pattern.compile(this.SUBCLASSES);
+				Matcher matcherDefnition=patternDefinition.matcher(results.group());
+				if(matcherDefnition.find()){
+					//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
+					List<String>subClassesDef=new ArrayList<String>(Arrays.asList((matcherDefnition.group().substring(11, matcherDefnition.group().length()).split(","))));
+					for (String sub:this.removeWhiteSpaces(subClassesDef)) {
+	
+						ClassDao parentClass=DataApi.classes.get(generalizationClassName);
+						if(parentClass!=null){
+							parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
+							ClassDao subClass=DataApi.classes.get(sub.trim());
+							if(subClass!=null){
+								//on ajoute a la sous class son parent
+								subClass.setParentClass(parentClass);
+							}
+							
+						}else{
+							//la classe parent n'est pas definie 
+							JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+generalizationClassName+" de la generalization n'est pas definie","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+							this.ERROR_ENCOUNTERED=true;
+							break;
+						}		
+					}
+				}
+				
+				scanner.findWithinHorizon(this.GENERALIZATION, 0);
+				results=scanner.match();
+
+			}
 		}catch(Exception e){
 			
 		}
 		
-		String generalizationClassName="";
-		while(results!=null &&  results.groupCount()>0){
-			Pattern pattern=Pattern.compile(this.GENERALIZATIONHEADER);
-			Matcher matcher=pattern.matcher(results.group());
-			if(matcher.find()){
-				//get the parent class
-				generalizationClassName=matcher.group().substring(15,matcher.group().length());
-				
-			}else{
-				System.out.println("erreur en parsant les generalizations");
-			}
-			Pattern patternDefinition=Pattern.compile(this.SUBCLASSES);
-			Matcher matcherDefnition=patternDefinition.matcher(results.group());
-			if(matcherDefnition.find()){
-				//boucler sur chaque sous classe et l'ajouter a la liste des sous classe du parent
-				List<String>subClassesDef=new ArrayList<String>(Arrays.asList((matcherDefnition.group().substring(11, matcherDefnition.group().length()).split(","))));
-				for (String sub:this.removeWhiteSpaces(subClassesDef)) {
-
-					ClassDao parentClass=DataApi.classes.get(generalizationClassName);
-					if(parentClass!=null){
-						parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
-					}else{
-						//la classe parent n'est pas definie 
-						JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+generalizationClassName+" de la generalization n'est pas definie","Message D'erreur",JOptionPane.ERROR_MESSAGE);
-						this.ERROR_ENCOUNTERED=true;
-						break;
-					}		
-				}
-			}
-			scanner.findWithinHorizon(this.GENERALIZATION, 0);
-			if(scanner.next()!=null){
-				results=scanner.match();
-				
-			}
-		}
 
 		
 	}
