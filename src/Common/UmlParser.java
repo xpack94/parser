@@ -314,7 +314,6 @@ public class UmlParser {
 		try{
 			scanner.findWithinHorizon(this.AGGREGATIONS, 0);
 			MatchResult results=scanner.match();
-			System.out.println(results.group());
 			while(results.groupCount()>0){
 				
 				List<String> aggregations = new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
@@ -338,6 +337,13 @@ public class UmlParser {
 						aggregationPartsName=aggPartsDesc.substring(0,aggPartsDesc.indexOf(" "));
 						aggregationPartsType=aggPartsDesc.substring(aggPartsDesc.indexOf(" ")+1,aggPartsDesc.length());
 						ClassDao aggregationPartClass=DataApi.classes.get(aggregationPartsName);
+						if(aggregationPartClass.getAggregations()!=null){
+							aggregationPartClass.getAggregations().add(aggregationContainerName);
+						}else{
+							aggregationPartClass.setAggregations(new ArrayList<String>());
+							aggregationPartClass.getAggregations().add(aggregationContainerName);
+						}
+						
 						if(aggregationPartClass!=null){
 							aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
 						}else{
@@ -348,13 +354,16 @@ public class UmlParser {
 						
 					}
 					
+					
 				}
 				ClassDao container=DataApi.classes.get(aggregationContainerName);
 				AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);
-				DataApi.aggregations.put(container.getName(), aggregation);
+				DataApi.aggregations.put(container.getName().trim(), aggregation);
 				
 				//ajout des details de l'aggregation
 				aggregation.setAggregationDetails(String.join("\r\n", aggregations));
+				
+				
 				scanner.findWithinHorizon(this.AGGREGATIONS, 0);
 				results=scanner.match();
 				

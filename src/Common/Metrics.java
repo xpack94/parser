@@ -114,9 +114,34 @@ public class Metrics {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	private float calculateCac(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return 0;
+	private float calculateCac(String relatedClass) {
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int cac=0;
+		if(classToCalculateFor!=null){
+			//on compte le nombre d'associations que la class fait partie
+			if(classToCalculateFor.getRelations()!=null && classToCalculateFor.getRelations().size()>0){
+				cac+=classToCalculateFor.getRelations().size();
+			}
+			
+			if(classToCalculateFor.getAggregations()!=null && classToCalculateFor.getAggregations().size()>0){
+				cac+=classToCalculateFor.getAggregations().size();
+				
+			}else if(DataApi.aggregations.get(classToCalculateFor.getName())!=null){
+				//cette class est une container d'une aggregation
+				cac++;
+			}
+			
+			if(classToCalculateFor.getParentClass()!=null){
+				//une classe parent existe donc on fait le meme calcule pour cette derniere
+				return cac+this.calculateCac(classToCalculateFor.getParentClass().getName());
+			}else{
+				//cette classe n'hérite d'aucune autre classe 
+				return cac;
+			}
+		}
+		
+		
+		return cac;
 	}
 	private float calculateEtc(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
