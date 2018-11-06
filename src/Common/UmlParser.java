@@ -338,17 +338,10 @@ public class UmlParser {
 							aggregationPartClass.getAggregations().add(aggregationContainerName);
 						}
 						
-						if(aggregationPartClass!=null){
-							aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
-						}else{
-							JOptionPane.showMessageDialog(FrameFactory.getFrame(), "erreur la classe "+aggregationPartsName+" n'existe pas","Message D'erreur",JOptionPane.ERROR_MESSAGE);
-							this.ERROR_ENCOUNTERED=true;
-							return;
-						}
+						aggregationRelations.add(new RelationType(aggregationPartsType,aggregationPartClass));
 						
 					}
-					
-					
+	
 				}
 				ClassDao container=DataApi.classes.get(aggregationContainerName);
 				AggregationDao aggregation=new AggregationDao(container, aggregationContainerType,aggregationRelations);

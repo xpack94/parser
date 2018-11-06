@@ -131,8 +131,15 @@ public class Metrics {
 		return count>maximum?count:maximum;
 	}
 	private float calculateDit(String relatedClass) {
-		// TODO Auto-generated method stub
-		return 0;
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int dit=0;
+		if(classToCalculateFor!=null){
+			while(classToCalculateFor.getParentClass()!=null){
+				dit++;
+				classToCalculateFor=classToCalculateFor.getParentClass();
+			}
+		}
+		return dit;
 	}
 	private float calculateCac(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
