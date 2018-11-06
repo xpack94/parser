@@ -9,6 +9,7 @@ public class DetailsNotifier extends Observable{
 	String selectedValue;
 	String ClassContainerName;
 	String updatedType;
+	String selectedClass;
 	public DetailsNotifier(){
 		super();
 	}
@@ -40,7 +41,13 @@ public class DetailsNotifier extends Observable{
 	public void setClassContainerName(String classContainerName) {
 		ClassContainerName = classContainerName;
 	}
+	public String getSelectedClass(){
+		return this.selectedClass;
+	}
 	
+	public void setSelectedClass(String selectedClass){
+		this.selectedClass=selectedClass;
+	}
 	
 	
 }

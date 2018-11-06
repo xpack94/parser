@@ -1,8 +1,6 @@
 package Components;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,15 +17,10 @@ import Common.ClassDao;
 import Common.DataApi;
 import Common.Features;
 import Common.MethodeDao;
-import Common.RelationDao;
-import Notifiers.AggregationsNotifier;
-import Notifiers.AttributesNotifier;
+import Common.Metrics;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
-import Notifiers.MethodeNotifier;
 import Notifiers.MetricsNotifier;
-import Notifiers.RelationsNotifier;
-import Notifiers.SubClassesNotifier;
 import Common.AttributeDao;
 import java.util.List;
 
@@ -40,10 +33,11 @@ public class ClassesList extends JList implements Observer{
 	private final int ROW_COUNT=-1;
 	private String SelectedClass="";
 	private ClassNotifier classNotifier;
-	private AttributesNotifier attributesNotifier;
-	private MethodeNotifier methodesNotifier;
-	private SubClassesNotifier subClassNotifier;
-	private RelationsNotifier relationsNotifier;
+	private ScrollPane scrollPaneForAttributes;
+	private ScrollPane scrollPaneForMethodes;
+	private ScrollPane scrollPaneForSubClasses;
+	private ScrollPane scrollPaneForRelations;
+
 	private DetailsNotifier detailsNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
 	private MetricsNotifier metricsNotifier;
@@ -100,12 +94,13 @@ public class ClassesList extends JList implements Observer{
 			//on recupere la definition de la classe choisit et on notifie les observateurs de chaque composante
 			ClassDao chosenClass=DataApi.classes.get(selectedItem);
 			List<AttributeDao> attributesOfClass=chosenClass.getAttributes();
-			this.attributesNotifier.setAtrributes(attributesOfClass);
+			scrollPaneForAttributes.update(attributesOfClass);
 			List<MethodeDao> methodesOfClass=chosenClass.getMethodes();
-			this.methodesNotifier.setMethodes(methodesOfClass);
-			this.subClassNotifier.setSubClasses(chosenClass.getSubClasses());
-			this.relationsNotifier.setRelations(chosenClass.getRelations(),chosenClass);
+			scrollPaneForMethodes.update(methodesOfClass);
+			scrollPaneForSubClasses.update(chosenClass.getSubClasses());
+			scrollPaneForRelations.update(chosenClass);
 			this.detailsNotifier.setClassContainerName(selectedItem);
+			this.detailsNotifier.setSelectedClass(selectedItem);
 			this.metricsNotifier.setSelectedClass(this.SelectedClass);
 		}else if(componentTitle.equals("metriques")){
 			// les elements de la liste des metrique ont été cliqué
@@ -118,17 +113,34 @@ public class ClassesList extends JList implements Observer{
 	
 	
 	public void update(Observable o, Object arg) {
-		//on met a jours la liste des classes a chaque notification
-		if( ((ClassNotifier)o).isShouldRemoveClass() ){				 
-			//on supprime tout ce qu'il y'avait dans le ClassList
-			((DefaultListModel)this.getModel()).clear();
-			((ClassNotifier)o).setShouldRemoveClass(false); //remettre a zero
-			return;
+		
+		if(this.getBorderTitle().equals("classes")){
+			//on met a jours les classes
+			
+			//on met a jours la liste des classes a chaque notification
+			if( ((ClassNotifier)o).isShouldRemoveClass() ){				 
+				//on supprime tout ce qu'il y'avait dans le ClassList
+				((DefaultListModel)this.getModel()).clear();
+				((ClassNotifier)o).setShouldRemoveClass(false); //remettre a zero
+				return;
+			}
+			ClassNotifier classToBeAdded=(ClassNotifier)o ;
+			if(classToBeAdded!=null){
+				((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
+			}
+		}else if(this.getBorderTitle().equals("metriques")){
+			// on met a jours les metriques
+			String selectedClass=((MetricsNotifier) o).getSelectedClass();
+			Metrics metrics=new Metrics();
+			DefaultListModel<String> list=new DefaultListModel<String>();
+			for(String metric:metrics.getMetrics()){
+				
+				list.addElement(metric+"="+metrics.metricsCalculator(selectedClass, metric));
+				metrics.generateCsv();
+			}
+			this.setModel(list);
 		}
-		ClassNotifier classToBeAdded=(ClassNotifier)o ;
-		if(classToBeAdded!=null){
-			((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
-		}
+		
 		
 		
 	}
@@ -136,30 +148,7 @@ public class ClassesList extends JList implements Observer{
 		ClassSelectionListener listener=new ClassSelectionListener(this);
 		this.addListSelectionListener(this.classSelectionListener);
 	}
-	public AttributesNotifier getAttributesNotifier() {
-		return attributesNotifier;
-	}
-	public void setAttributesNotifier(AttributesNotifier attributesNotifier) {
-		this.attributesNotifier = attributesNotifier;
-	}
-	public MethodeNotifier getMethodesNotifier() {
-		return methodesNotifier;
-	}
-	public void setMethodesNotifier(MethodeNotifier methodesNotifier) {
-		this.methodesNotifier = methodesNotifier;
-	}
-	public SubClassesNotifier getSubClassNotifier() {
-		return subClassNotifier;
-	}
-	public void setSubClassNotifier(SubClassesNotifier subClassNotifier) {
-		this.subClassNotifier = subClassNotifier;
-	}
-	public RelationsNotifier getRelationsNotifier() {
-		return relationsNotifier;
-	}
-	public void setRelationsNotifier(RelationsNotifier relationsNotifier) {
-		this.relationsNotifier = relationsNotifier;
-	}
+	
 	public DetailsNotifier getDetailsNotifier() {
 		return detailsNotifier;
 	}
@@ -174,6 +163,38 @@ public class ClassesList extends JList implements Observer{
 	public void setMetricsNotifier(MetricsNotifier metricsNotifier) {
 		this.metricsNotifier = metricsNotifier;
 	}
+
+	
+
+
+
+	public ScrollPane getScrollPaneForAttributes() {
+		return scrollPaneForAttributes;
+	}
+	public void setScrollPaneForAttributes(ScrollPane scrollPaneForAttributes) {
+		this.scrollPaneForAttributes = scrollPaneForAttributes;
+	}
+	public ScrollPane getScrollPaneForMethodes() {
+		return scrollPaneForMethodes;
+	}
+	public void setScrollPaneForMethodes(ScrollPane scrollPaneForMethodes) {
+		this.scrollPaneForMethodes = scrollPaneForMethodes;
+	}
+	public ScrollPane getScrollPaneForSubClasses() {
+		return scrollPaneForSubClasses;
+	}
+	public void setScrollPaneForSubClasses(ScrollPane scrollPaneForSubClasses) {
+		this.scrollPaneForSubClasses = scrollPaneForSubClasses;
+	}
+	public ScrollPane getScrollPaneForRelations() {
+		return scrollPaneForRelations;
+	}
+	public void setScrollPaneForRelations(ScrollPane scrollPaneForRelations) {
+		this.scrollPaneForRelations = scrollPaneForRelations;
+	}
+
+
+
 
 
 	private class ClassSelectionListener implements ListSelectionListener {

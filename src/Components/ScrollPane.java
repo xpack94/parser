@@ -1,28 +1,18 @@
 package Components;
 
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+
 import javax.swing.JViewport;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import Notifiers.AttributesNotifier;
-import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
-import Notifiers.MethodeNotifier;
-import Notifiers.RelationsNotifier;
-import Notifiers.SubClassesNotifier;
 import Common.AggregationDao;
 import Common.AttributeDao;
 import Common.ClassDao;
@@ -31,9 +21,8 @@ import Common.Features;
 import Common.MethodeDao;
 import Common.RelationDao;
 import Common.RelationType;
-import Notifiers.AttributesNotifier;
 
-public class ScrollPane extends JScrollPane implements Observer {
+public class ScrollPane extends JScrollPane {
 
 	private final String borderTitle;
 	private Features features;
@@ -53,68 +42,71 @@ public class ScrollPane extends JScrollPane implements Observer {
 			
 	}	
 	
-			
 	//la fonction qui va s'executer a chaque fois que les elements de la classe observée changent 
-	public void update(Observable o, Object arg) {
-		if(this.getBorderTitle().equals("Attributs") ){
-			this.updateAttributes(o);
-		}else if(this.getBorderTitle().equals("Methodes")){
-			this.updateMethodes(o);
-		}else if(this.getBorderTitle().equals("Sous Classes")){
-			this.updateSubClasses(o);
-		}else if(this.getBorderTitle().equals("Associations/Aggregations")){
-			this.updateRelations(o);
-			this.updateAggregations((ClassDao)arg);
+		public void update( Object o) {
+			if(this.getBorderTitle().equals("Attributs") ){
+				this.updateAttributes(o);
+			}else if(this.getBorderTitle().equals("Methodes")){
+				this.updateMethodes(o);
+			}else if(this.getBorderTitle().equals("Sous Classes")){
+				this.updateSubClasses(o);
+			}else if(this.getBorderTitle().equals("Associations/Aggregations")){
+				this.updateRelations(o);
+				this.updateAggregations(o);
+			}
+			
 		}
-		
-	}
 	
-	private void updateAttributes(Observable o){
+	
+	private void updateAttributes(Object o){
 		// sera implementer une fois que les classes observées seront ajoutés
 		((DefaultListModel)this.list.getModel()).clear();
-		for (AttributeDao attr:((AttributesNotifier) o ).getAtrributes()){
+		for (AttributeDao attr:(List<AttributeDao>)o){
 			((DefaultListModel)this.list.getModel()).addElement( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
 		}
 	}
-	private  void updateMethodes(Observable o){
+	private  void updateMethodes(Object o){
 		((DefaultListModel)this.list.getModel()).clear();
-		if(((MethodeNotifier) o).getMethodes().size()==0){
+		List<MethodeDao> methodes=(List<MethodeDao>)o;
+		if(methodes.size()==0){
 			((DefaultListModel)this.list.getModel()).addElement("aucune Methode trouvée");
 		}else{
-			for(MethodeDao methode:((MethodeNotifier) o).getMethodes()){
+			for(MethodeDao methode:methodes){
 				((DefaultListModel)this.list.getModel()).addElement(methode.getReturnType()+" "+methode.getMethodeName()+"("+
 					methode.parametersToString()+")"+"\r\n");
 			}
 		}
 		
 	}
-	private void updateSubClasses(Observable o){
+	private void updateSubClasses(Object o){
 		((DefaultListModel)this.list.getModel()).clear();
-		if(((SubClassesNotifier) o).getSubClasses().size()==0){
+		List<ClassDao> subClasses=(List<ClassDao>)o;
+		if(subClasses.size()==0){
 			((DefaultListModel)this.list.getModel()).addElement("aucune sous classe");
 		}else{
-			for(ClassDao subClass:((SubClassesNotifier)o).getSubClasses()){
+			for(ClassDao subClass:subClasses){
 				((DefaultListModel)this.list.getModel()).addElement(subClass.getName()+"\r\n");
 			}
 		}
 	}
 	
-	private void updateRelations(Observable o){
+	private void updateRelations(Object o){
 		
 		JViewport viewport = this.getViewport(); 
 		JList<String> relationsList= (JList<String>)viewport.getView();
+		 List<RelationDao> relations=((ClassDao)o).getRelations();
 		//supprimer tout les element avant d'afficher les nouveaux 
 		((DefaultListModel)relationsList.getModel()).clear();
 		
-		for(RelationDao relation:((RelationsNotifier)o).getRelations()){
+		for(RelationDao relation:relations){
 			((DefaultListModel)relationsList.getModel()).addElement("(R) "+
 				relation.getRelationName());
 		}
 		
 	}
 	
-	private void updateAggregations(ClassDao selectedClass){
-		AggregationDao aggr=DataApi.aggregations.get(selectedClass.getName());
+	private void updateAggregations(Object o){
+		AggregationDao aggr=DataApi.aggregations.get(((ClassDao)o).getName());
 		JViewport viewport = this.getViewport(); 
 		JList<String> relationsList= (JList<String>)viewport.getView();
 		if(aggr!=null){

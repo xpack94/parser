@@ -177,21 +177,12 @@ public class ButtonTrigger extends JButton implements Observer{
 				    else {
 				        System.out.println("access au fichier annulé.");
 				    }       
-				}else if(buttonTitle.equals("Calculer Metriques")){
+				}else if(buttonTitle.equals("Generer fichier csv")){
 					//le bouton des metriques est cliqué 
 					if(this.button.associatedList!=null){
 						//on charge toutes les metriques
 						Metrics metrics=new Metrics();
-						DefaultListModel<String> list=new DefaultListModel<String>();
-						if(this.button.selectedClass!=null){
-							for(String metric:metrics.getMetrics()){
-								
-								list.addElement(metric+"="+metrics.metricsCalculator(this.button.selectedClass, metric));
-								metrics.generateCsv();
-							}
-							this.button.associatedList.setModel(list);
-						}
-						
+						metrics.generateCsv();
 						
 					}
 				}

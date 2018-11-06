@@ -44,7 +44,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 		String selectedValue=((DetailsNotifier)o).getSelectedValue();
 		String updatedType=((DetailsNotifier)o).getUpdatedType();
 		String details="";
-		if(selectedValue.contains(("R"))){
+		if(selectedValue.contains(("(R)"))){
 			//afficher les details de la relations
 			String relationName=selectedValue.substring(selectedValue.indexOf(")")+1,selectedValue.length()).trim();
 			RelationDao relation=DataApi.relations.get(relationName);
@@ -52,7 +52,7 @@ public class DetailsTextField extends JTextArea implements Observer {
 				details=relation.getRelationDetails();
 			}
 			
-		}else if(selectedValue.contains("A")){
+		}else if(selectedValue.contains("(A)")){
 			//afficher les details de l'aggregation
 			String containerClass=((DetailsNotifier)o).getClassContainerName();
 			String selectedAggregationPart=((DetailsNotifier)o).getSelectedValue();
@@ -65,11 +65,15 @@ public class DetailsTextField extends JTextArea implements Observer {
 		}else if(updatedType.equals("Methodes")){
 			System.out.println("methodess");
 		}else if(updatedType.equals("Sous Classes")){
-			details+=DataApi.classes.get(selectedValue.trim()).getClassDescription();
+			if(DataApi.classes.get(selectedValue.trim()) !=null){
+				details+=DataApi.classes.get(selectedValue.trim()).getClassDescription();
+			}
+			
 			
 		}else if(updatedType.equals("metrics") && selectedValue!=null){
-			Metrics metrics=new Metrics("test");
-			details=metrics.getDefinitions().get(selectedValue);
+			String selectedClass=((DetailsNotifier)o).getSelectedClass();
+			Metrics metrics=new Metrics(selectedClass);
+			details=metrics.getDefinitions().get(selectedValue.substring(0,selectedValue.lastIndexOf("=")));
 		}
 		this.setText("");
 		this.append(details);

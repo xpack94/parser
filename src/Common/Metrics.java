@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.xml.crypto.Data;
+
+import controller.FrameFactory;
 
 public class Metrics {
 
@@ -299,26 +302,34 @@ public class Metrics {
 	
 	
 	public void generateCsv(){
-		try {
-			PrintWriter writer = new PrintWriter("metrics.csv", "UTF-8");
-			List<ClassDao> classes=new ArrayList<ClassDao>();
-			String row="       ,";
-			for(String c:DataApi.classes.keySet()){
-				classes.add(DataApi.classes.get(c));
-				row+=DataApi.classes.get(c).getName()+",";
+		if(DataApi.classes.size()>0){
+			try {
+				
+				PrintWriter writer = new PrintWriter("metrics.csv", "UTF-8");
+				List<ClassDao> classes=new ArrayList<ClassDao>();
+				String row="       ,";
+				for(String c:DataApi.classes.keySet()){
+					classes.add(DataApi.classes.get(c));
+					row+=DataApi.classes.get(c).getName()+",";
+				}
+				row=row.substring(0,row.length()-1); // on supprime la derniere virgule
+				row+="\r\n";
+				row+=this.buildCsv(DataApi.classes.keySet().size()-1,classes);
+				writer.print(row);
+				writer.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			row=row.substring(0,row.length()-1);
-			row+="\r\n";
-			row+=this.buildCsv(DataApi.classes.keySet().size()-1,classes);
-			writer.print(row);
-			writer.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else{
+			// aucune classe trouvée
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "aucune classe trouvée");
 		}
+		
+		
 		
 	}
 	

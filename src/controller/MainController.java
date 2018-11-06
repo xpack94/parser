@@ -1,35 +1,24 @@
 package controller;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
 import Common.Features;
-import Common.Metrics;
 import Components.ClassesList;
 import Components.DetailsTextField;
 import Components.ButtonTrigger;
 import Components.FileUploaderInput;
 import Components.ScrollPane;
-import Notifiers.AttributesNotifier;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
 import Notifiers.InputFileNotifier;
-import Notifiers.MethodeNotifier;
 import Notifiers.MetricsNotifier;
-import Notifiers.RelationsNotifier;
-import Notifiers.SubClassesNotifier;
+
+
 
 public class MainController {
 
@@ -47,7 +36,7 @@ public class MainController {
 		 DetailsTextField detailsField=new DetailsTextField("Details");
 		 DefaultListModel listModel = new DefaultListModel();
 		 ClassesList classes=new ClassesList(listModel, "classes");
-		 ButtonTrigger metricsLoader=new ButtonTrigger("Calculer Metriques");
+		 ButtonTrigger metricsLoader=new ButtonTrigger("Generer fichier csv");
 		 DefaultListModel metrics = new DefaultListModel();
 		 ClassesList metricsList=new ClassesList(metrics,"metriques");
 		 JPanel attrPanel = new JPanel();
@@ -138,10 +127,6 @@ public class MainController {
 		 
 		 //creation des observateurs
 		 ClassNotifier classNotifier=new ClassNotifier();
-		 AttributesNotifier attributesNotifier=new AttributesNotifier();
-		 MethodeNotifier methodesNotifier=new MethodeNotifier();
-		 SubClassesNotifier subClassesNotifier=new SubClassesNotifier();
-		 RelationsNotifier relationsNotifier=new RelationsNotifier();
 		 DetailsNotifier detailsNotifier=new DetailsNotifier();
 		 InputFileNotifier inputFileNotifier=new InputFileNotifier();
 		 MetricsNotifier metricsNotifier=new MetricsNotifier();
@@ -150,14 +135,6 @@ public class MainController {
 		 fileUploaderButton.setClassNotifier(classNotifier);
 		 classes.setClassNotifier(classNotifier);
 		 classNotifier.addObserver(classes);
-		 classes.setAttributesNotifier(attributesNotifier);
-		 classes.setMethodesNotifier(methodesNotifier);
-		 attributesNotifier.addObserver(scrollPaneOne);
-		 methodesNotifier.addObserver(scrollPaneTwo);
-		 classes.setSubClassNotifier(subClassesNotifier);
-		 subClassesNotifier.addObserver(scrollPaneThree);
-		 classes.setRelationsNotifier(relationsNotifier);
-		 relationsNotifier.addObserver(scrollPaneFour);
 		 classes.setDetailsNotifier(detailsNotifier);
 		 scrollPaneOne.setDetailsListener(detailsNotifier);
 		 scrollPaneTwo.setDetailsListener(detailsNotifier);
@@ -168,9 +145,13 @@ public class MainController {
 		 inputFileNotifier.addObserver(fileUploaderInput);
 		 metricsList.setDetailsNotifier(detailsNotifier);
 		 metricsLoader.setAssociatedList(metricsList);
-		 metricsLoader.setClassNotifier(classNotifier);
-		 metricsNotifier.addObserver(metricsLoader);
 		 classes.setMetricsNotifier(metricsNotifier);
+		 metricsNotifier.addObserver(metricsList); 
+		 classes.setScrollPaneForAttributes(scrollPaneOne);
+		 classes.setScrollPaneForMethodes(scrollPaneTwo);
+		 classes.setScrollPaneForSubClasses(scrollPaneThree);
+		 classes.setScrollPaneForRelations(scrollPaneFour);
+		 
 		 
 	}
 
