@@ -20,7 +20,6 @@ import Common.MethodeDao;
 import Common.Metrics;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
-import Notifiers.MetricsNotifier;
 import Common.AttributeDao;
 import java.util.List;
 
@@ -40,8 +39,8 @@ public class ClassesList extends JList implements Observer{
 
 	private DetailsNotifier detailsNotifier;
 	private ClassSelectionListener classSelectionListener=new ClassSelectionListener(this);
-	private MetricsNotifier metricsNotifier;
-	
+	//private MetricsNotifier metricsNotifier;
+	private ClassesList metricsList;
 	
 	public ClassesList(ListModel data,String borderTitle,Features features){
 		super(data);
@@ -101,7 +100,8 @@ public class ClassesList extends JList implements Observer{
 			scrollPaneForRelations.update(chosenClass);
 			this.detailsNotifier.setClassContainerName(selectedItem);
 			this.detailsNotifier.setSelectedClass(selectedItem);
-			this.metricsNotifier.setSelectedClass(this.SelectedClass);
+			//this.metricsNotifier.setSelectedClass(this.SelectedClass);
+			this.metricsList.updateMetricsList(this.SelectedClass);
 		}else if(componentTitle.equals("metriques")){
 			// les elements de la liste des metrique ont été cliqué
 			this.detailsNotifier.setUpdatedType("metrics");
@@ -128,21 +128,23 @@ public class ClassesList extends JList implements Observer{
 			if(classToBeAdded!=null){
 				((DefaultListModel)this.getModel()).addElement(classToBeAdded.getClassContainer().getName());
 			}
-		}else if(this.getBorderTitle().equals("metriques")){
-			// on met a jours les metriques
-			String selectedClass=((MetricsNotifier) o).getSelectedClass();
-			Metrics metrics=new Metrics();
-			DefaultListModel<String> list=new DefaultListModel<String>();
-			for(String metric:metrics.getMetrics()){
-				
-				list.addElement(metric+"="+metrics.metricsCalculator(selectedClass, metric));
-				metrics.generateCsv();
-			}
-			this.setModel(list);
 		}
-		
-		
-		
+	}
+	
+	private void updateMetricsList(String className){
+			// on met a jours les metriques
+			ClassDao selectedClass=DataApi.classes.get(className);
+			if(selectedClass!=null){
+				Metrics metrics=new Metrics();
+				DefaultListModel<String> list=new DefaultListModel<String>();
+				for(String metric:metrics.getMetrics()){
+					
+					list.addElement(metric+"="+metrics.metricsCalculator(selectedClass.getName(), metric));
+					metrics.generateCsv();
+				}
+				this.setModel(list);
+			}
+			
 	}
 	private void addSelectEvent(){
 		ClassSelectionListener listener=new ClassSelectionListener(this);
@@ -155,19 +157,6 @@ public class ClassesList extends JList implements Observer{
 	public void setDetailsNotifier(DetailsNotifier detailsNotifier) {
 		this.detailsNotifier = detailsNotifier;
 	}
-
-	
-	public MetricsNotifier getMetricsNotifier() {
-		return metricsNotifier;
-	}
-	public void setMetricsNotifier(MetricsNotifier metricsNotifier) {
-		this.metricsNotifier = metricsNotifier;
-	}
-
-	
-
-
-
 	public ScrollPane getScrollPaneForAttributes() {
 		return scrollPaneForAttributes;
 	}
@@ -191,6 +180,17 @@ public class ClassesList extends JList implements Observer{
 	}
 	public void setScrollPaneForRelations(ScrollPane scrollPaneForRelations) {
 		this.scrollPaneForRelations = scrollPaneForRelations;
+	}
+
+
+
+
+
+	public ClassesList getMetricsList() {
+		return metricsList;
+	}
+	public void setMetricsList(ClassesList metricsList) {
+		this.metricsList = metricsList;
 	}
 
 

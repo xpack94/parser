@@ -1,26 +1,19 @@
 package Components;
 
-import java.awt.Insets;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
 
-
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import controller.FrameFactory;
-
-import Common.ClassDao;
 import Common.Features;
 import Common.Metrics;
 import Common.UmlParser;
 import Notifiers.ClassNotifier;
-import Notifiers.InputFileNotifier;
 import Notifiers.MetricsNotifier;
 
 
@@ -28,13 +21,7 @@ import Notifiers.MetricsNotifier;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import controller.FrameFactory;
-
 import Components.ButtonTrigger;
 
 
@@ -44,11 +31,10 @@ public class ButtonTrigger extends JButton implements Observer{
 	//contient toutes les caracteristique de cette composante
 	private Features features;
 	private ClassNotifier classNotifier;
-	private InputFileNotifier inputFileNotifier;
 	private final String buttonTitle;
 	private ClassesList associatedList;
 	private String selectedClass;
-	
+	private FileUploaderInput inputTextFiled;
 	//le action listener du boutton qui va lui etre reliér
 	private UploadFileListener uploadFileListener=new UploadFileListener(this);
 	private UmlParser umlParser;
@@ -93,7 +79,7 @@ public class ButtonTrigger extends JButton implements Observer{
 	
 		this.umlParser=new UmlParser(readFile);
 		String fileName=readFile.getName();
-		this.inputFileNotifier.setFileName(fileName);
+		this.inputTextFiled.setFileName(fileName);
 		
 		if(!fileName.substring(fileName.indexOf(".")+1, fileName.length()).equals("ucd")){
 			// le format choisit n'est pas .ucd
@@ -114,12 +100,6 @@ public class ButtonTrigger extends JButton implements Observer{
 		this.classNotifier = classNotifier;
 	}
 
-	public InputFileNotifier getInputFileNotifier() {
-		return inputFileNotifier;
-	}
-	public void setInputFileNotifier(InputFileNotifier inputFileNotifier) {
-		this.inputFileNotifier = inputFileNotifier;
-	}
 	
 	
 	
@@ -149,6 +129,17 @@ public class ButtonTrigger extends JButton implements Observer{
 	}
 
 
+	
+
+	public FileUploaderInput getInputTextFiled() {
+		return inputTextFiled;
+	}
+	public void setInputTextFiled(FileUploaderInput inputTextFiled) {
+		this.inputTextFiled = inputTextFiled;
+	}
+
+
+
 
 	private class UploadFileListener implements ActionListener{
 		private ButtonTrigger button;
@@ -157,6 +148,8 @@ public class ButtonTrigger extends JButton implements Observer{
 		public UploadFileListener(ButtonTrigger fileUploaderButton){
 			this.button=fileUploaderButton;
 		}
+		
+		
 		
 		//la methode qui s'occupe d'afficher le fileChooser et retourne le fichier selectionné
 		public void actionPerformed(ActionEvent e) {

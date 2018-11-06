@@ -1,19 +1,12 @@
 package Components;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
-
 import javax.swing.JTextField;
-
 import Common.Features;
-import Notifiers.InputFileNotifier;
 
-public class FileUploaderInput extends JTextField implements Observer{
+public class FileUploaderInput extends JTextField {
 
 	private Features features=new Features();
 	private  boolean IS_ENABLED=false;
-	
+	private String fileName;
 	public FileUploaderInput(Features features){
 		super();
 		this.features=features;
@@ -36,11 +29,13 @@ public class FileUploaderInput extends JTextField implements Observer{
 	public void setComponentFeatures(Features features){
 		this.features=features;
 	}
-	public void update(Observable o, Object arg) {
-		this.setText( ((InputFileNotifier ) o).getFileName());
-		
+	public String getFileName() {
+		return fileName;
 	}
-	
-	
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+		this.setText(fileName);
+	}
+		
 }
 

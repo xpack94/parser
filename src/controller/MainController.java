@@ -15,9 +15,6 @@ import Components.FileUploaderInput;
 import Components.ScrollPane;
 import Notifiers.ClassNotifier;
 import Notifiers.DetailsNotifier;
-import Notifiers.InputFileNotifier;
-import Notifiers.MetricsNotifier;
-
 
 
 public class MainController {
@@ -128,8 +125,6 @@ public class MainController {
 		 //creation des observateurs
 		 ClassNotifier classNotifier=new ClassNotifier();
 		 DetailsNotifier detailsNotifier=new DetailsNotifier();
-		 InputFileNotifier inputFileNotifier=new InputFileNotifier();
-		 MetricsNotifier metricsNotifier=new MetricsNotifier();
 		 
 		 //l'ajout des observateurs de chaque composante 
 		 fileUploaderButton.setClassNotifier(classNotifier);
@@ -141,17 +136,14 @@ public class MainController {
 		 scrollPaneThree.setDetailsListener(detailsNotifier);
 		 scrollPaneFour.setDetailsListener(detailsNotifier);
 		 detailsNotifier.addObserver(detailsField);
-		 fileUploaderButton.setInputFileNotifier(inputFileNotifier);
-		 inputFileNotifier.addObserver(fileUploaderInput);
 		 metricsList.setDetailsNotifier(detailsNotifier);
 		 metricsLoader.setAssociatedList(metricsList);
-		 classes.setMetricsNotifier(metricsNotifier);
-		 metricsNotifier.addObserver(metricsList); 
 		 classes.setScrollPaneForAttributes(scrollPaneOne);
 		 classes.setScrollPaneForMethodes(scrollPaneTwo);
 		 classes.setScrollPaneForSubClasses(scrollPaneThree);
 		 classes.setScrollPaneForRelations(scrollPaneFour);
-		 
+		 classes.setMetricsList(metricsList);
+		 fileUploaderButton.setInputTextFiled(fileUploaderInput);
 		 
 	}
 
