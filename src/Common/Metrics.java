@@ -110,11 +110,24 @@ public class Metrics {
 		}
 		return 0;
 	}
-	private float calculateCld(String relatedClass2) {
-		// TODO Auto-generated method stub
-		return 0;
+	private float calculateCld(String relatedClass) {
+		return this.cidCalculator(relatedClass,0,0);
 	}
-	private float calculateDit(String relatedClass2) {
+	
+	private int cidCalculator(String relatedClass,int count,int max){
+		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int cid=count;
+		int maximum=max;
+		if(classToCalculateFor!=null){
+			for(ClassDao subClass:classToCalculateFor.getSubClasses()){
+				cid=cidCalculator(subClass.getName(),count+1,max);
+				maximum=cid>maximum?cid:maximum;
+			}
+		}
+		
+		return count>maximum?count:maximum;
+	}
+	private float calculateDit(String relatedClass) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -323,25 +336,7 @@ public class Metrics {
 		
 		
 	}
-	private String generateOneColumn(int index,ClassDao relatedClass){
-		 String valueToReturn="";
-		 String className=relatedClass.getName();
-		 System.out.println(relatedClass.getName());
-		 valueToReturn+=className+"\r\n"+
-				 		this.calculateAna(className)+"\r\n"+
-				 		this.calculateNom(className)+"\r\n"+
-				 		this.calculateNoa(className)+"\r\n"+
-				 		this.calculateItc(className)+"\r\n"+
-				 		this.calculateEtc(className)+"\r\n"+
-				 		this.calculateCac(className)+"\r\n"+
-				 		this.calculateDit(className)+"\r\n"+
-				 		this.calculateCld(className)+"\r\n"+
-				 		this.calculateNoc(className)+"\r\n"+
-				 		this.calculateNod(className)+"\r\n";
-		 
-		return valueToReturn;
-	}
-	
+
 	public List<String> getMetrics() {
 		return metrics;
 	}
