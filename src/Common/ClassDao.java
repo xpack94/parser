@@ -12,6 +12,7 @@ public class ClassDao {
 	private List<RelationDao> relations;
 	private List<String> aggregations;
 	private ClassDao parentClass;
+	private String classDescription;
 	
 	public ClassDao(String name,List<AttributeDao> classAttributes,List<MethodeDao> classMethodes){
 		this.attributes=classAttributes;
@@ -84,6 +85,14 @@ public class ClassDao {
 
 	public void setAggregations(List<String> aggregations) {
 		this.aggregations = aggregations;
+	}
+
+	public String getClassDescription() {
+		return classDescription;
+	}
+
+	public void setClassDescription(String classDescription) {
+		this.classDescription = classDescription;
 	}
 	
 	

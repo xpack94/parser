@@ -159,8 +159,10 @@ public class UmlParser {
 					this.ERROR_ENCOUNTERED=true;
 					return;
 				}
+				
 				//l'ajout de la class avec sa definition dans le hashMap qui contient toutes les classes
 				DataApi.classes.put(ClassName, new ClassDao(ClassName, classAttributes, classMethodes));
+				DataApi.classes.get(ClassName).setClassDescription(oneClass.trim());
 				//ajout de la class dans le notificateur
 				//ce dernier va notifier le ClassList pour qu'il se met a jours a chaque ajout de class
 				this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
