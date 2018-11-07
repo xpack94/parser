@@ -14,9 +14,6 @@ import Common.Features;
 import Common.Metrics;
 import Common.UmlParser;
 import Notifiers.ClassNotifier;
-import Notifiers.MetricsNotifier;
-
-
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -26,7 +23,7 @@ import Components.ButtonTrigger;
 
 
 
-public class ButtonTrigger extends JButton implements Observer{
+public class ButtonTrigger extends JButton {
 	
 	//contient toutes les caracteristique de cette composante
 	private Features features;
@@ -123,10 +120,7 @@ public class ButtonTrigger extends JButton implements Observer{
 		this.associatedList = associatedList;
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		this.selectedClass=((MetricsNotifier)o).getSelectedClass();
-	}
+
 
 
 	
