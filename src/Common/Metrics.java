@@ -232,11 +232,11 @@ public class Metrics {
 	}
 	
 	
-	private float calculateAna(String relatedClass){
+	public float calculateAna(String relatedClass){
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int numberOfAttrs=0;
 		if(classToCalculateFor!=null){
-			
+			System.out.println(relatedClass);
 			for(MethodeDao methode:classToCalculateFor.getMethodes()){
 				numberOfAttrs+=methode.getParameters().size();
 			}

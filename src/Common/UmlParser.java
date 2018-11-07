@@ -18,7 +18,14 @@ import controller.FrameFactory;
 
 import Notifiers.ClassNotifier;
 
-
+/**la classe UmlParser s'occupe de faire le parsing du fichier ucd lit , cette derniere 
+ * contient les methode qui parse les classes , les relations , les generalization et les aggregations
+ * elle permet aussi de detecter les erreurs l'ors du parsing du fichier
+ * 
+ * @version 2.0
+ * 
+ * 
+ * **/
 public class UmlParser {
 	
 	private File fileToParse;
@@ -34,10 +41,17 @@ public class UmlParser {
 	private String GENERALIZATIONHEADER="GENERALIZATION.*";
 	private String AGGREGATIONS="AGGREGATION+\\s+([^;])*";
 	
+	private String CLASSNAME="CLASS.*";
 	public UmlParser(File fileToParse){
 		this.fileToParse=fileToParse;
 	}
-	
+	/**@param file de type File qui represente le fichier a parser 
+	 * @return void car elle se contante d'appler les methodes qui font le parsing 
+	 * et qui remplissent les hashMaps de la classes DataApi
+	 * 
+	 * 
+	 * 
+	 * **/
 	public void parseFile(File file){
 		
 		Scanner s = null;
@@ -66,10 +80,24 @@ public class UmlParser {
 			this.handleGeneralizations(s);
 			this.handleRelation(s);
 			this.handleAggregations(s);
+			
+			if(DataApi.classes.size()==0){
+				//on a a faire a un fichier vide
+				JOptionPane.showMessageDialog(FrameFactory.getFrame(), "le fichier fourni est vide","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+				this.ERROR_ENCOUNTERED=true;
+				return;
+			}
 		}
 		
 	}
-	
+	/**
+	 * @param scanner du type Scanner
+	 * @return void
+	 * permet de chercher les classes du fichier avec une expression reguliere relatif a la classe
+	 * si une ou plusieurs classes sont trouvées alors elle appele la methode @see handleOneClass qui 
+	 * fait le parsing d'une seule classe et ceux pour toute les classes trouvées
+	 * 
+	 **/
 	private void handleClasses(Scanner scanner){
 		try{
 			scanner.findWithinHorizon(this.CLASSES, 0);
@@ -85,6 +113,14 @@ public class UmlParser {
 	
 		}
 	
+	
+	/**
+	 * @param attributes de type {@link List<String>} corrspodant au attributs de la classe lu du fichier 
+	 * @return {@link List<AttributeDao>} correspondant au attributs de la classe avec tout leurs informations
+	 * 
+	 *  cette methode permet de creer les AttributeDao pour chaque attribut lu 
+	 *  une attributeDao est une classe contenant toutes les informations de ce dernier
+	 * */
 	//methode qui cree une list de type AttributeDao et qui le peuple avec les attribute données 
 	private List<AttributeDao> populateAttributes(List<String> attributes){
 		List<AttributeDao> attributesList=new ArrayList<AttributeDao>();
@@ -103,8 +139,14 @@ public class UmlParser {
 		return attributesList;
 		
 	}
-	
+	/**
+	 * @param oneClass correspondant a une des classes du fichier lu 
+	 * @return void
+	 * s'occupe de faire le parsing d'une seule classe et remplit les hashMaps du DataApi
+	 * 
+	 * */
 	private void handleOneClass(String oneClass){
+				
 				// on matche les attributs de la classe
 				Pattern patternAttrs=Pattern.compile(this.ATTRIBUTES);
 				Matcher matcherAttrs=patternAttrs.matcher(oneClass);
@@ -123,32 +165,23 @@ public class UmlParser {
 					// des methodes existe pour cette classe 
 					// alors on doit les créer
 					
-					classMethodes=this.populateMethodes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(MatcherMethodes.group().split("\\r\\n")))));
+					classMethodes=this.populateMethodes(this.removeWhiteSpaces(new ArrayList<String>(Arrays.asList(MatcherMethodes.group().split("\n")))));
+					
 				}
-				List<String > classDefinition=new ArrayList<String>(Arrays.asList(oneClass.split("\\r\\n")));	
+				List<String > classDefinition=new ArrayList<String>(Arrays.asList(oneClass.split("\n")));	
 				//on se debarasse de tout les espaces
 				classDefinition=this.removeWhiteSpaces(classDefinition);
 				String ClassName="";
 				//maintenant on dispose d'un array list contenant la description d'une class
-				ClassName=classDefinition.get(0).substring(6,classDefinition.get(0).length());
-				
-				//on verifie si il existe d'attribut dupliqué dans la meme classe
-				if(classAttributes!=null  && this.checkDuplicates(classAttributes)){
-					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+ClassName
-							,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-					this.ERROR_ENCOUNTERED=true;
-					return;	
+				Pattern patternClass=Pattern.compile(this.CLASSNAME);
+				Matcher matcherClass=patternClass.matcher(oneClass);
+				if(matcherClass.find()){
+					
+					ClassName=matcherClass.group().substring(matcherClass.group().indexOf("CLASS")+6).trim();
+					
 				}
-				//on verifie si il existe des duplications de methodes dans la meme classe
-				if(this.checkMethodeDuplicates(classMethodes)){
-					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+ClassName,
-							"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
-					this.ERROR_ENCOUNTERED=true;
-					return;
-				}
-				if(DataApi.classes.get(ClassName)!=null){
-					JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+ClassName,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
-					this.ERROR_ENCOUNTERED=true;
+				// faire la validation des methode et attribut et class qui viennent d'etre parser
+				if(!this.classValidation(ClassName,classAttributes,classMethodes)){
 					return;
 				}
 				
@@ -160,8 +193,15 @@ public class UmlParser {
 				this.classNotifier.setClassContainer(DataApi.classes.get(ClassName));
 			
 	}
-	
+	/**
+	 * @param methodes qui represente les methodes lu du fichier
+	 * @return {@link List<MethodeDao>} apres population dans les classe MethodeDao
+	 * 
+	 * permet de populer les methodes lu dans des classes de type MethodeDao contenant
+	 * toutes les informations des methodes
+	 * */
 	private List<MethodeDao> populateMethodes(List<String> methodes){
+		
 		List<MethodeDao> methodesList=new ArrayList<MethodeDao>();
 		if(methodes.size()>0){
 			for(String methode:methodes){
@@ -185,6 +225,12 @@ public class UmlParser {
 		
 			
 	}
+	/**
+	 * @param scanner qui correspond au fichier lu 
+	 * @return void 
+	 * s'occupe de faire le parsing des generalization a l'aide de l'expression reguliere 
+	 * relatif a cette derniere 
+	 * */
 	//methode qui s'occupe de la gestion des super class
 	//fait l'ajout a la liste des sous classe du parent 
 	private void handleGeneralizations(Scanner scanner){
@@ -211,7 +257,8 @@ public class UmlParser {
 					List<String>subClassesDef=new ArrayList<String>(Arrays.asList((matcherDefnition.group().substring(11, matcherDefnition.group().length()).split(","))));
 					for (String sub:this.removeWhiteSpaces(subClassesDef)) {
 	
-						ClassDao parentClass=DataApi.classes.get(generalizationClassName);
+						ClassDao parentClass=DataApi.classes.get(generalizationClassName.trim());
+
 						if(parentClass!=null){
 							parentClass.setSubClassToParent(DataApi.classes.get(sub.trim()));
 							ClassDao subClass=DataApi.classes.get(sub.trim());
@@ -219,7 +266,6 @@ public class UmlParser {
 								//on ajoute a la sous class son parent
 								subClass.setParentClass(parentClass);
 							}
-							
 						}else{
 							//la classe parent n'est pas definie 
 							JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+generalizationClassName+" de la generalization n'est pas definie","Message D'erreur",JOptionPane.ERROR_MESSAGE);
@@ -240,7 +286,14 @@ public class UmlParser {
 
 		
 	}
-	
+	/**
+	 * @param scanner correspondant au fichier lu 
+	 * @return void 
+	 * 
+	 * s'occupe de faire le parsing des relations trouvée a l'aide d'une experssion reguliere relatif 
+	 * aux relations 
+	 * cette methode popule le hashMap des relations de la classe DataApi 
+	 * */
 	//methode qui prend une description d'une relation et qui popule le hashMap des relations 
 	// ou le nom de la relation est la clé
 	private void handleRelation(Scanner scanner){
@@ -301,6 +354,14 @@ public class UmlParser {
 		
 		
 	}
+	
+	/**
+	 * @param scanner qui represente le fichier lu 
+	 * @return void 
+	 * d'occupe de faire le parsing des aggregations trouvée a l'aide d'une expression reguliere relatif a cette derniere
+	 * cette methode remplit le hashMap des aggregations de la classe DataApi
+	 * 
+	 * */
 	//methode qui fait la gestion des aggregation et qui popule le hashMap des aggregations
 	//avec le container comme clé 
 	private void handleAggregations(Scanner scanner){
@@ -366,7 +427,11 @@ public class UmlParser {
 		
 	}
 	
-	
+	/**
+	 * @param multiplicity qui represente la multiplicité d'une relation 
+	 * @return boolean qui correspond a true si la multiplicité donnée en entrée est valide et false sinon
+	 * 
+	 * */
 	//methode qui verifie si la multiplicité est valide ou non
 	//retourne un boolean 
 	private boolean isValidMultiplcity(String multiplicity){
@@ -376,6 +441,12 @@ public class UmlParser {
 		}
 		return true;
 	}
+	
+	/**
+	 * @param List<AttributeDao> correspondant a tout les attribut d'une classe 
+	 * @return boolean qui represente true si il existe des duplication d'un meme attribut et false sinon
+	 * 
+	 * */
 	
 	//methode qui verifie si il existe des duplications d'attribut dans une meme classe 
 	private boolean checkDuplicates(List<AttributeDao> attributes){
@@ -391,6 +462,10 @@ public class UmlParser {
 		return false;
 	}
 	
+	/**
+	 * @param List<MethodeDao> qui represente les methode d'une classe 
+	 * @return boolean qui represente true si il y'a une duplication d'une meme methode avec les meme signatures et false sinon
+	 * */
 	//methode qui verifie l'existance d'une diplication de methodes dans une meme classe
 	private boolean checkMethodeDuplicates(List<MethodeDao> methodes){
 		HashMap<String, Boolean> methodesList=new HashMap<String, Boolean>();
@@ -409,14 +484,64 @@ public class UmlParser {
 		
 	}
 	
+	/**
+	 * 
+	 * @return void 
+	 * permet de remetre a zero les hashMaps du DataApi
+	 * */
 	// la methode qui remet a zero les données 
 	private void reset(){
 		DataApi.classes.clear();
 		DataApi.aggregations.clear();
 		DataApi.relations.clear();
 	}
+	/**@param className qui represente le nom d'une classe du fichier
+	 * @param List<AttributeDao> qui represente les attributs d'une classe donnée
+	 * @param List<MethodeDao> qui represente les methodes d'une classe donnée 
+	 * @return qui represente false si la classe n'est pas valide te true sinon 
+	 * 
+	 * cette methode fait la validation des données d'une classe avant de rajouter cette derniere dans le HashMap
+	 * 
+	 * 
+	 * */
+	private  boolean classValidation(String className,List<AttributeDao> attributes,List<MethodeDao> methdoes){
+		
+		//on verifie si il existe d'attribut dupliqué dans la meme classe
+		if(attributes!=null  && this.checkDuplicates(attributes)){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication d'attribut dans la classe "+className
+					,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return false;	
+		}
+		//on verifie si il existe des duplications de methodes dans la meme classe
+		if(this.checkMethodeDuplicates(methdoes)){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de methodes avec les memes parametres dans la classe "+className,
+					"Messager D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return false;
+		}
+		//on verifie si la classe existe deja et donc qu'il ya de duplication de classe 
+		if(DataApi.classes.get(className)!=null){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "duplication de la classe "+className,"Message D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return false;
+		}
+		// on verifie si c'est une classe vide
+		if(attributes.size()==0 && methdoes.size()==0){
+			JOptionPane.showMessageDialog(FrameFactory.getFrame(), "la classe "+className+" est une classe vide","Message D'erreur",JOptionPane.ERROR_MESSAGE);
+			this.ERROR_ENCOUNTERED=true;
+			return false;
+		}
+		
+		return true;
+	}
 	
-	
+	/**@param classdefinition qui represente une difinition d'une classe sous la forme d'une liste 
+	 * 
+	 * @return List<String> correspondant a la definition de la classe mais sans espace blanc 
+	 * 
+	 * 
+	 * */
 	private List<String> removeWhiteSpaces(List<String> classDefinition){
 		
 			for(int i=0;i<classDefinition.size();i++){
