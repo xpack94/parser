@@ -352,6 +352,7 @@ public class Metrics {
 		List<MethodeDao> methodes=new ArrayList<MethodeDao>();
 		int nom=0;
 		if(classToCalculateFor!=null){
+			
 			nom+=classToCalculateFor.getMethodes().size();
 			while(classToCalculateFor.getParentClass()!=null){
 				methodes.addAll(classToCalculateFor.getMethodes());
@@ -360,7 +361,6 @@ public class Metrics {
 				nom+=classToCalculateFor.getMethodes().size()-numberOfOverridenMethodes;
 			}
 		}
-		
 		
 	 return nom;	
 	}
@@ -374,22 +374,13 @@ public class Metrics {
 	public int doesOverride(List<MethodeDao> methodes,List<MethodeDao> currentMethodes){
 	
 		int numberOfOverridenMethoes=0;
-		List<MethodeDao> methodeToUse=null;
-		List<MethodeDao> otherMethodes=null;
-		if(methodes.size()>=currentMethodes.size()){
-			methodeToUse=currentMethodes;
-			otherMethodes=methodes;
-		}else{
-			methodeToUse=methodes;
-			otherMethodes=currentMethodes;
-		}
-		for(int i =0;i<methodeToUse.size();i++){
-			for(int k =0;k<otherMethodes.size();k++){
-				if(otherMethodes.get(k).getMethodeName().equals(methodeToUse.get(i).getMethodeName())
-						&& otherMethodes.get(k).getReturnType().equals(methodeToUse.get(i).getReturnType())){
-					System.out.println(otherMethodes.get(k).getMethodeName()+" "+methodeToUse.get(i).getMethodeName());
-					List<AttributeDao> methodeParams=methodeToUse.get(i).getParameters();
-					List<AttributeDao> currentMethodeParams=otherMethodes.get(i).getParameters();
+		
+		for(int i =0;i<methodes.size();i++){
+			for(int k =0;k<currentMethodes.size();k++){
+				if(currentMethodes.get(k).getMethodeName().equals(methodes.get(i).getMethodeName())
+						&& currentMethodes.get(k).getReturnType().equals(methodes.get(i).getReturnType())){
+					List<AttributeDao> methodeParams=methodes.get(i).getParameters();
+					List<AttributeDao> currentMethodeParams=currentMethodes.get(k).getParameters();
 					if(methodeParams.size()==currentMethodeParams.size()){
 						int j=0;
 						for(j=0;j<methodeParams.size();j++){
@@ -401,6 +392,7 @@ public class Metrics {
 						}
 						if(j==methodeParams.size()){
 							numberOfOverridenMethoes++;
+							currentMethodes.remove(k);
 						}
 					}
 					

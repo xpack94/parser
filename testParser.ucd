@@ -1,0 +1,65 @@
+MODEL Ligue
+CLASS company 
+ATTRIBUTES 
+      nom_company : String
+OPERATIONS
+      nombre_model() : Integer,
+      entraineur() : String,
+      add_model(element : model) : void
+;
+
+
+CLASS model
+ATTRIBUTES 
+      saison : Integer,
+      statut : String,
+OPERATIONS 
+      nombre_saisons() : Integer,
+      change_statut (st : String) : void
+;
+
+CLASS Ent
+ATTRIBUTES 
+      degre : Integer
+OPERATIONS 
+;
+
+CLASS test 
+ATTRIBUTES 
+      nom : String,
+      adresse : String
+OPERATIONS 
+      Utilise_par(eq : company, annee : Integer) : Boolean
+;
+CLASS Test 
+ATTRIBUTES 
+      nom : String,
+      adresse : String
+OPERATIONS 
+      Utilise_par(eq : company, annee : Integer) : Boolean
+;
+
+GENERALIZATION model
+	SUBCLASSES test
+;
+
+
+RELATION est_dans 
+       ROLES
+       CLASS company MANY,
+       CLASS test ONE
+;
+
+
+RELATION test 
+       ROLES
+       CLASS Ent ONE_OR_MANY,
+       CLASS Test ONE
+;
+
+AGGREGATION 
+CONTAINER 
+       CLASS Test ONE
+PARTS
+       CLASS model ONE_OR_MANY
+;

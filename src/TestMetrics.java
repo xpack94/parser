@@ -25,8 +25,8 @@ public class TestMetrics {
 		float ana =m.calculateAna("ift");
 		float ana2=m.calculateAna("ift2");
 		float ana3=m.calculateAna("ift3");
-		assertEquals(2, ana,delta);
-		assertEquals(0, ana2,delta); // test du cas ou il y'a aucun parametre dans les methode 
+		assertEquals(2, ana,delta);	 // test du cas ou il y'a plusieurs parametres dans les methodes
+		assertEquals(0, ana2,delta); // test du cas ou il y'a aucun parametre dans les methodes 
 		assertEquals(0, ana3,delta) ;//test du cas ou il y'a aucune methode  
 		
 		
@@ -36,14 +36,14 @@ public class TestMetrics {
 		parser.setFileToParse(nomFile);
 		parser.parseFile(parser.getFileToParse());
 		
-		/*float nom=m.calculateNom("nom"); 
+		float nom=m.calculateNom("nom"); 
 		float nom2=m.calculateNom("nom2"); 
-		float nom4=m.calculateNom("nom4"); */
-		//float nom5=m.calculateNom("nom5"); 
-		//assertEquals(3, nom,delta); // teste pour le cas ou il y'a que des methode locale
-		//assertEquals(1, nom2,delta);// teste pour le cas ou i y'a que des methode hérité
-		//assertEquals(2, nom4,delta) ; //teste pour le cas ou il y'a des methodes hérité et local
-	//	assertEquals(2, nom5,delta) ; // teste du cas ou il y'a des methode local et hérité de plusieurs classe 
+		float nom4=m.calculateNom("nom4"); 
+		float nom5=m.calculateNom("nom5"); 
+		assertEquals(3, nom,delta); // teste pour le cas ou il y'a que des methode locale
+		assertEquals(2, nom2,delta);// teste pour le cas ou i y'a que des methodes hérité
+		assertEquals(2, nom4,delta) ; //teste pour le cas ou il y'a des methodes hérité et local
+		assertEquals(2, nom5,delta) ; // teste du cas ou il y'a des methodes local et héritées de plusieurs classes 
 		
 		
 		// les tests pour 
