@@ -1,5 +1,10 @@
 package Common;
 
+/**
+ * 
+ * classe qui contient une classe qui est en relation avec une autre ainsi que sa multiplicité 
+ * 
+ * */
 public class RelationType {
 
 	private String type;

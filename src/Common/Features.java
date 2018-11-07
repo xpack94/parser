@@ -3,13 +3,15 @@ package Common;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
+/**
+ * classe qui decrit les caracteristiques de chaque composante suivant le gridBagLaout
+ * **/
 public class Features extends GridBagConstraints {
 	
 	//cette classe est utiliser permet de donner toutes les caracteristiques d'une composante qui l'instancie
 	public Features(){
 		super();
 	}
-	
 	public Features(int gridX,int gridY,int gridWidth,int gridHeight,int fill,int anchor,Insets insets,
 			int ipadX,int ipadY,float weightX,float weightY){
 		

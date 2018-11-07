@@ -10,6 +10,9 @@ import javax.swing.JPanel;
 
 import Common.Features;
 
+/**
+ * classe qui joue le role d'un panel et permet de contenir et d'ajouter des composante a l'interieur 
+ * */
 public class PanelContoller extends JPanel {
 
 	private Features features;

@@ -3,6 +3,9 @@ package Common;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * classe qui comporte toutes les informations relatif aux aggregations 
+ * **/
 public class AggregationDao {
 	private ClassDao aggregationContainer;
 	private String aggregationType;

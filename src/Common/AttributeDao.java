@@ -1,5 +1,8 @@
 package Common;
 
+/*
+ * classe qui contient un attribut d'une classe avec ses informations
+ * **/
 public class AttributeDao {
 
 	private String attributeName;

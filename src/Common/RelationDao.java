@@ -2,7 +2,11 @@ package Common;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+ * classe qui comporte toutes les informations relatif aux relations 
+ * 
+ * 
+ * **/
 public class RelationDao {
 
 	private String relationName;

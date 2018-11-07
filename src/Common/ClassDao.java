@@ -2,7 +2,10 @@ package Common;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * classe qui contient les informations relatif a une classe du fichier parsé 
+ * contient tout les attributs , methodes , sous classes,relations aggregations 
+ * */
 public class ClassDao {
 
 	private String name;

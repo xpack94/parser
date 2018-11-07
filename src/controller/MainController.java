@@ -25,7 +25,12 @@ public class MainController {
 		this.panel=panel;
 		this.init();
 	}
-	
+	/**
+	 * methode qui fait l'initialisation de toutes les composante de l'interface graphic 
+	 * definie aussi la taille de chaaque composante et leurs position a l'ecran 
+	 * ou chaque composante utilise le gridBagLayout
+	 * 
+	 * **/
 	private void init(){
 		 //final PanelContoller panel=new PanelContoller(new GridBagLayout());
 		 ButtonTrigger fileUploaderButton= new ButtonTrigger("charger fichier");

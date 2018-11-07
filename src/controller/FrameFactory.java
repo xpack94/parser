@@ -4,6 +4,12 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
 
+
+/**
+ * classe qui comporte la fenetre principale de l'interface graphic 
+ * cette fenetre est uniq et utilise donc le pattern du singleton
+ * 
+ * */
 public class FrameFactory extends JFrame{
 
 	private static JFrame FRAME =new FrameFactory("test");

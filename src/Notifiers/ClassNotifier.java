@@ -4,6 +4,14 @@ import java.util.Observable;
 
 import Common.ClassDao;
 
+
+/**
+ * @version 1.0
+ * 
+ * classe sui joue le role de classe notificatrice et qui permet de notifier le composant @see ClassList
+ *  apres chaque appel a la methode setContainer 
+ *  cette classe extends la class Observable et utilise donc le pattern de l'observateur
+ * */
 public class ClassNotifier extends Observable {
 
 	private ClassDao classContainer;
