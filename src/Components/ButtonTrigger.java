@@ -22,6 +22,12 @@ import javax.swing.JFileChooser;
 import Components.ButtonTrigger;
 
 
+/**
+ * classe qui correspond au boutons de l'interface graphique dans notre cas c'est le bouton qui permet de 
+ * charger le fichier ainsi que le bouton qui genere le fichier csv 
+ * le listener de l'evenement clique pour les deux bouton est gerer par la sous classe UploadFileListener de celle ci
+ * 
+ * **/
 
 public class ButtonTrigger extends JButton {
 	
@@ -69,7 +75,12 @@ public class ButtonTrigger extends JButton {
 		this.features=features;
 	}
 	
-	
+	/**
+	 * @param readFile qui correspond au fichier chargé
+	 * cette methode permet de faire la verification du type du fichier chargée si ce dernier et de type
+	 * ucd alors elle fait appel a la methode @see parseFile de la classe @see  umlParser qui fait le parsing
+	 * et si le fichier n'est pas du bon type alors elle affiche une erreur
+	 * **/
 
 	//la methode qui prends le fichier choisis en entrée et lit le fichier sous forme de string
 	public void setReadFile(File readFile){
@@ -134,7 +145,10 @@ public class ButtonTrigger extends JButton {
 
 
 
-
+	/**
+	 * classe qui gére les evenements de cliques sur les boutons
+	 * 
+	 * **/
 	private class UploadFileListener implements ActionListener{
 		private ButtonTrigger button;
 		
@@ -144,7 +158,15 @@ public class ButtonTrigger extends JButton {
 		}
 		
 		
-		
+		/***
+		 * @param e de type ActionEvent qui correspond a l'evenement du clique
+		 * 
+		 * cette methode gere les cliques sur les deux butons de l'interface (bouton charger fichier et generer csv)
+		 * pour le bouton charger fichier elle permet l'affichage du JFileChooser dans lequel l'utulisateur
+		 * charge le fichier ensuite se dernier est donné a la methode setReadFile de la classe @ see ButtonTrigger
+		 * 
+		 * pour le boutton generer csv cette methode appele la methode generateCsv de la classe @see metrics
+		 * */
 		//la methode qui s'occupe d'afficher le fileChooser et retourne le fichier selectionné
 		public void actionPerformed(ActionEvent e) {
 			//le boutton qui charge les fichier ucd est cliqué

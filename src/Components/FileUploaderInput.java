@@ -2,6 +2,11 @@ package Components;
 import javax.swing.JTextField;
 import Common.Features;
 
+
+/**
+ * classe qui correspond a la composante de l'input qui contient le nom du fichier parsé 
+ * 
+ * **/
 public class FileUploaderInput extends JTextField {
 
 	private Features features=new Features();

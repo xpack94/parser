@@ -23,6 +23,14 @@ import Notifiers.DetailsNotifier;
 import Common.AttributeDao;
 import java.util.List;
 
+/**
+ * cette classe correspond aux deux composantes (des classes et des metriques ) de l'interface graphique 
+ * elle sont notifier des changement et des ajout de classes par la classe @see ClassNotifier 
+ * cette classe implemente l'interface Observer et donc elle redifinie la methode update qui a son tours 
+ * met a jours les autre composantes de l'interface 
+ * 
+ * 
+ * **/
 public class ClassesList extends JList implements Observer{
 
 	private Features features=new Features();
@@ -85,6 +93,15 @@ public class ClassesList extends JList implements Observer{
 	public void setClassNotifier(ClassNotifier classNotifier) {
 		this.classNotifier = classNotifier;
 	}
+	/**@param selectedItem qui correspond a la classe ou la metrique selectionnée 
+	 * si une classe est selectionnée alors elle notifie toutes les autres composantes pour qu'elles affichent 
+	 * les details necessaire relatif a la classe choisite 
+	 * 
+	 * si une metrique est selectionnée alors elle notifie le composant la classe DetailsTextField pour qu'elle affiche 
+	 * la definition de la metrique choisite et ce en notifiant le detailsNotifier  
+	 * 
+	 * 
+	 * */
 	public void updateChosenClass(String selectedItem){
 		String componentTitle=this.getBorderTitle();
 		if(componentTitle.equals("classes")){
@@ -111,7 +128,16 @@ public class ClassesList extends JList implements Observer{
 		
 	}
 	
-	
+	/**
+	 * @param o de type Observable qui correspond a l'objet de la classe ClassNotifier 
+	 * @param Object arg qui est un arguments quelconque qu'on peut passer 
+	 * 
+	 * cette methode est appeler directement apres la methode notifyObservers de la classe @see ClassNotifier
+	 * et donc elle permet de mettre a jours le composant des classes soit en supprimant toutes les classe existante(l'ors d'une erreure au parsing) 
+	 * soit en populant toutes les classes deja parsé 
+	 * 
+	 * 
+	 * **/
 	public void update(Observable o, Object arg) {
 		
 		if(this.getBorderTitle().equals("classes")){
@@ -130,7 +156,14 @@ public class ClassesList extends JList implements Observer{
 			}
 		}
 	}
-	
+	/**
+	 * @param ClasseName correspondant au nom de la classe pour laquel on veut calculer toutes les metriques
+	 * 
+	 * cette methodes est appeler a chaque fois qu'un element du composant des classes et cliqué 
+	 * elle permet donc de calculer toutes les metriques relatif a la classe selectionnée
+	 * fait appel a la methode metricsCalculator de la classe @see Metrics pour calculer chaque metrique
+	 * 
+	 * **/
 	private void updateMetricsList(String className){
 			// on met a jours les metriques
 			ClassDao selectedClass=DataApi.classes.get(className);
@@ -140,7 +173,7 @@ public class ClassesList extends JList implements Observer{
 				for(String metric:metrics.getMetrics()){
 					
 					list.addElement(metric+"="+metrics.metricsCalculator(selectedClass.getName(), metric));
-					metrics.generateCsv();
+					//metrics.generateCsv();
 				}
 				this.setModel(list);
 			}
@@ -195,8 +228,12 @@ public class ClassesList extends JList implements Observer{
 
 
 
-
-
+	
+	/**
+	 * 
+	 * classe qui fait la gestion des selections des elements des JList soit celui des classes soit celui des metriques
+	 * 
+	 * **/
 	private class ClassSelectionListener implements ListSelectionListener {
 
 		private ClassesList classesContainer;
@@ -204,6 +241,12 @@ public class ClassesList extends JList implements Observer{
 		public ClassSelectionListener(ClassesList classesContainer){
 			this.classesContainer=classesContainer;
 		}
+		
+		/**
+		 * methode qui gere les selection de chaque element dans les composantes des classe et des metriques 
+		 * pour chaque selection elle fait appel a la methode updateChosenClass de la classe @see ClassList
+		 * 
+		 * **/
 		public void valueChanged(ListSelectionEvent e) {
 			
 			if (!e.getValueIsAdjusting()){

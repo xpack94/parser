@@ -17,6 +17,13 @@ import Common.RelationDao;
 import Common.RelationType;
 import Notifiers.DetailsNotifier;
 
+
+
+/**
+ * classe qui correspond a la composante des details dans l'interface graphique 
+ * cette classe implemente l'interface Observer et redefinie la methode update de cette derniere 
+ * elle permet de faire l'affichage des details de chaque autres elements des autres composante
+ * **/
 public class DetailsTextField extends JTextArea implements Observer {
 	Features features =new Features();
 	
@@ -39,6 +46,15 @@ public class DetailsTextField extends JTextArea implements Observer {
 	public void setFeatures(Features features){
 		this.features=features;
 	}
+	
+	/**
+	 * cette methode est appler  et notifier par la classe  @see DetailsNotifier 
+	 * a chaque changement de valeur de cette derniere et donc cette methode et executer a chaque clique sur un des 
+	 * elements des composantes des sous classe et des relations/aggregations ainsi que les elements des composantes
+	 * des attributs et des methodes
+	 * elle permet d'afficher les details relatif a chaque element cliqué on fonction de la composante
+	 * 
+	 * **/
 	public void update(Observable o, Object arg) {
 		//extraire la valeur 
 		String selectedValue=((DetailsNotifier)o).getSelectedValue();
@@ -80,10 +96,6 @@ public class DetailsTextField extends JTextArea implements Observer {
 		
 	}
 	
-	private void displayDefinition(String metric){
-		
-		
-		
-	}
+
 	
 }

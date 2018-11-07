@@ -22,6 +22,14 @@ import Common.MethodeDao;
 import Common.RelationDao;
 import Common.RelationType;
 
+
+/**
+ * classe qui contient toutes les composante du mileu de l'interface graphique incluant ceux des 
+ * methode , attributs , relation/aggregation et sous classes 
+ * 
+ * 
+ * **/
+
 public class ScrollPane extends JScrollPane {
 
 	private final String borderTitle;
@@ -42,6 +50,11 @@ public class ScrollPane extends JScrollPane {
 			
 	}	
 	
+	/**
+	 * @param Object qui correspond a l'objet qui est sur le point d'etre mis a jours
+	 * cette methode met a jours les composante en appelant les bonne methode en fonction du type de composant
+	 * 
+	 * **/
 	//la fonction qui va s'executer a chaque fois que les elements de la classe observée changent 
 		public void update( Object o) {
 			if(this.getBorderTitle().equals("Attributs") ){
@@ -57,7 +70,12 @@ public class ScrollPane extends JScrollPane {
 			
 		}
 	
-	
+	/**@param o de type Object qui represente une liste d'attributs 
+	 * 
+	 * cette methode popule la liste d'attribut dans le JList et l'affiche 
+	 * 
+	 * 
+	 * **/
 	private void updateAttributes(Object o){
 		// sera implementer une fois que les classes observées seront ajoutés
 		((DefaultListModel)this.list.getModel()).clear();
@@ -65,6 +83,15 @@ public class ScrollPane extends JScrollPane {
 			((DefaultListModel)this.list.getModel()).addElement( attr.getAttributeType()+" "+attr.getAttributeName()+"\r\n");
 		}
 	}
+	
+	
+	/**
+	 * @param o de type Object qui correspond a une list de methodes 
+	 * 
+	 *  cette methode popule le Jlist avec les methodes données en entrée et les affiches 
+	 * 
+	 * 
+	 * **/
 	private  void updateMethodes(Object o){
 		((DefaultListModel)this.list.getModel()).clear();
 		List<MethodeDao> methodes=(List<MethodeDao>)o;
@@ -78,6 +105,15 @@ public class ScrollPane extends JScrollPane {
 		}
 		
 	}
+	
+	/**
+	 * 
+	 * @param o de type Object qui correspond a une liste de sous classes 
+	 * 
+	 * cette methode popule le Jlist des sous classe et l'affiche 
+	 * 
+	 * 
+	 * **/
 	private void updateSubClasses(Object o){
 		((DefaultListModel)this.list.getModel()).clear();
 		List<ClassDao> subClasses=(List<ClassDao>)o;
@@ -89,7 +125,12 @@ public class ScrollPane extends JScrollPane {
 			}
 		}
 	}
-	
+	/**
+	 * @param o de type Object qui correspond a une classe choiste dans le composant des classe 
+	 * elle permet d'extraire les relation de la classe donnée en entrée et de remplire le Jlist et l'afficher
+	 * 
+	 * 
+	 * **/
 	private void updateRelations(Object o){
 		
 		JViewport viewport = this.getViewport(); 
@@ -104,7 +145,11 @@ public class ScrollPane extends JScrollPane {
 		}
 		
 	}
-	
+	/**
+	 *  @param o de type Object qui correspond a une classe choiste dans le composant des classe 
+	 * elle permet d'extraire les aggregations de la classe donnée en entrée et de remplire le Jlist et l'afficher
+	 * 
+	 * **/
 	private void updateAggregations(Object o){
 		AggregationDao aggr=DataApi.aggregations.get(((ClassDao)o).getName());
 		JViewport viewport = this.getViewport(); 

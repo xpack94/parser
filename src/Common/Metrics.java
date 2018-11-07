@@ -16,6 +16,14 @@ import javax.xml.crypto.Data;
 
 import controller.FrameFactory;
 
+/**
+ * @version 1.0
+ * 
+ * cette classe contient la definition de tout les metriques ainsi que les methode qui permettent de les calculer 
+ * elle contient aussi une methode qui permet la creation d'un fichier csv pour visualiser tout les metriques de toutes 
+ * les classe du fichier 
+ * 
+ * **/
 public class Metrics {
 
 	private List<String> metrics;
@@ -33,7 +41,10 @@ public class Metrics {
 		this.fillDefinitions();
 		
 	}
-	
+	/**
+	 * @return void 
+	 * methode qui definie chaque metrique et la sauvegarde dans un hashMap
+	 * */
 	private void fillDefinitions(){
 			this.definitions.put("ANA", " Nombre moyen d’arguments des méthodes locales pour la classe "+relatedClass);
 			this.definitions.put("NOM"
@@ -49,7 +60,14 @@ public class Metrics {
 			this.definitions.put("NOD", " Nombre de sous-classes directes et indirectes de "+relatedClass);
 	}
 	
-	
+	/**
+	 * @param relatedClass de type string qui correspond a la classe pour laquelle on veux calculer une metrique
+	 * @param metricToCalculate de type string qui correspond a la metrique qu'on veut calculer
+	 * @return String qui correspond au resultat de la metrique calculée
+	 *  
+	 * cette methode permet de faire l'appel a la bonne methode pour faire le calcule de la metrique voulue
+	 * 
+	 * **/
 	public String metricsCalculator(String relatedClass,String metricToCalculate){
 		float result=0;
 		switch (metricToCalculate){
@@ -89,7 +107,14 @@ public class Metrics {
 	}
 	
 
-	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Ana 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique ana 
+	 * 
+	 * 
+	 * */
 	private float calculateNod(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		if(classToCalculateFor!=null){
@@ -105,6 +130,11 @@ public class Metrics {
 		
 		return 0;
 	}
+	
+	/**
+	 *@param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Noc
+	 * @return float qui correspond au resultat du calcule  
+	 * **/
 	private float calculateNoc(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		if(classToCalculateFor!=null){
@@ -113,6 +143,11 @@ public class Metrics {
 		}
 		return 0;
 	}
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Cid 
+	 * @return float qui correspond au resultat du calcule 
+	 * cette methode fait le calcule de la metrique cid
+	 * **/
 	private float calculateCld(String relatedClass) {
 		return this.cidCalculator(relatedClass,0,0);
 	}
@@ -130,6 +165,14 @@ public class Metrics {
 		
 		return count>maximum?count:maximum;
 	}
+	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique dit 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Dit 
+	 * 
+	 * **/
 	private float calculateDit(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int dit=0;
@@ -141,6 +184,15 @@ public class Metrics {
 		}
 		return dit;
 	}
+	
+	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Cac 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Cac 
+	 * 
+	 * **/
 	private float calculateCac(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int cac=0;
@@ -170,6 +222,14 @@ public class Metrics {
 		
 		return cac;
 	}
+	
+	/***
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Etc 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Etc 
+	 * 
+	 * */
 	private float calculateEtc(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int etc=0;
@@ -194,7 +254,14 @@ public class Metrics {
 		
 		return etc;
 	}
-	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Itc 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Itc 
+	 * 
+	 * 
+	 * **/
 	private float calculateItc(String relatedClass) {
 		List<String> primitiveTypes=new ArrayList<String>(Arrays.asList("integer","int","float","double","char","byte","short",
 				"long","string","boolean","bool"));
@@ -217,6 +284,15 @@ public class Metrics {
 		
 		return itc;
 	}
+	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Noa 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Noa 
+	 * 
+	 * 
+	 * **/
 	private float calculateNoa(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		if(classToCalculateFor!=null){
@@ -231,7 +307,14 @@ public class Metrics {
 		return 0;
 	}
 	
-	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Ana 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique ana 
+	 * 
+	 * 
+	 * **/
 	public float calculateAna(String relatedClass){
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int numberOfAttrs=0;
@@ -248,7 +331,13 @@ public class Metrics {
 		
 		return  Float.parseFloat(new DecimalFormat("##.##").format(finalAna));
 	}
-	
+	/**
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Nom 
+	 * @return float qui correspond au resultat du calcule 
+	 * 
+	 * cette methode fait le calcule de la metrique Nom 
+	 * 
+	 * **/
 	private float calculateNom(String relatedClass){
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int nom=0;
@@ -307,7 +396,12 @@ public class Metrics {
 		return numberOfOverridenMethoes;
 	}
 	
-	
+	/**
+	 * methode qui permet de generer le fichier csv qui donne le resulats de toutes les metriques pour chaque classe
+	 * fait l'ajout de la premiere ligne qui contient les nom de toutes les classes separer par des virgules
+	 * fait appel a la methode @see  buildCsv
+	 * 
+	 * **/
 	public void generateCsv(){
 		if(DataApi.classes.size()>0){
 			try {
@@ -321,7 +415,7 @@ public class Metrics {
 				}
 				row=row.substring(0,row.length()-1); // on supprime la derniere virgule
 				row+="\r\n";
-				row+=this.buildCsv(DataApi.classes.keySet().size()-1,classes);
+				row+=this.buildCsv(classes);
 				writer.print(row);
 				writer.close();
 			} catch (FileNotFoundException e) {
@@ -339,8 +433,16 @@ public class Metrics {
 		
 		
 	}
-	
-	private String buildCsv(int size,List<ClassDao> classes){
+	/**
+	 * 
+	 * @param List<ClassDao> contenant toutes les classe du fichier 
+	 * boucle sur toutes les metriques a calculer qui se trouve dans l'attribut metrics 
+	 * boucle sur  les classes données et  appel la methode @see metricsCalculator qui calcule 
+	 * la metrique en question pour chaque classe 
+	 * 
+	 * 
+	 * **/
+	private String buildCsv(List<ClassDao> classes){
 		String row="";
 		for(String metricToCalculate:this.metrics){
 			row+=metricToCalculate+",";

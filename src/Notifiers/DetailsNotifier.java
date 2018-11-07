@@ -4,6 +4,11 @@ import java.util.Observable;
 
 import Common.ClassDao;
 
+
+/***
+ * cette classe joue le role de notificateur car elle permet de notifier la classe @see DetailsTextFiel a chaque changement 
+ * ou selection des elements des autres composantes 
+ * */
 public class DetailsNotifier extends Observable{
 
 	String selectedValue;
@@ -27,7 +32,11 @@ public class DetailsNotifier extends Observable{
 		this.updatedType = updatedType;
 	}
 
-
+	/**
+	 * @param selectedValue qui correspond a un element d'un composant qui est selectionné
+	 * cette methode notifie la classe @see detailsTextFiled pour qu'il affiche les details de l'element selectedValue qui est selectionné
+	 * 
+	 * **/
 	public void setSelectedValue(String selectedValue) {
 		this.selectedValue = selectedValue;
 		this.setChanged(); //l'etat de la classe a changée
