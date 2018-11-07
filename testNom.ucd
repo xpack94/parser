@@ -1,0 +1,48 @@
+MODEL Test
+CLASS nom 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS nom2 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	
+;  
+CLASS nom3 
+ATTRIBUTES
+OPERATIONS 
+	nom() : void,
+	test() : void
+	
+; 
+
+
+CLASS nom4 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	test() : void
+	
+; 
+
+CLASS nom5 
+ATTRIBUTES
+	test : Integer
+	test2 : Integer
+OPERATIONS 
+	test() : void
+	
+; 
+GENERALIZATION nom3
+	SUBCLASSES nom2 , nom4
+;
+GENERALIZATION nom4
+	SUBCLASSES nom5
+;
+
+

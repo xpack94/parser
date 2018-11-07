@@ -1,0 +1,22 @@
+MODEL Test
+CLASS ift 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS ift2 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants() : void ,
+	nbre_tables() : void ,
+	nom_prof() : void
+;  
+CLASS ift3 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	
+; 

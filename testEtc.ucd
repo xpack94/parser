@@ -1,0 +1,26 @@
+MODEL Test
+CLASS etc1 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : etc3, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS etc2 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : etc3, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+;  
+CLASS etc3 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 
+	
+	
+; 
+
+

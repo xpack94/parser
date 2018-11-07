@@ -306,7 +306,7 @@ public class UmlParser {
 			
 		
 		while(results.groupCount()>0){
-					relation=new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
+					relation=new ArrayList<String>(Arrays.asList(results.group().split("\n")));
 					relation=this.removeWhiteSpaces(relation);
 					String relationName="";
 					for(String rel:relation){
@@ -371,7 +371,7 @@ public class UmlParser {
 			MatchResult results=scanner.match();
 			while(results.groupCount()>0){
 				
-				List<String> aggregations = new ArrayList<String>(Arrays.asList(results.group().split("\\r\\n")));
+				List<String> aggregations = new ArrayList<String>(Arrays.asList(results.group().split("\n")));
 				aggregations=this.removeWhiteSpaces(aggregations);
 				List<RelationType> aggregationRelations=new ArrayList<RelationType>();
 				String aggType="";

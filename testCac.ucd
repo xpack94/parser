@@ -1,0 +1,71 @@
+MODEL Test
+CLASS cac 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS cac2 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	
+;  
+CLASS cac3 
+ATTRIBUTES
+OPERATIONS 
+	nom() : void,
+	test() : void
+	
+; 
+
+
+CLASS cac4 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	test() : void
+	
+; 
+
+CLASS cac6 
+ATTRIBUTES
+OPERATIONS 
+	nom() : void,
+	test() : void
+	
+; 
+
+
+GENERALIZATION cac2
+	SUBCLASSES cac4
+;
+GENERALIZATION cac6
+	SUBCLASSES cac3
+;
+RELATION est_localisee_a 
+       ROLES
+       CLASS cac3 MANY,
+       CLASS cac2 ONE
+;
+
+
+
+RELATION dirige 
+       ROLES
+       CLASS cac3 ONE_OR_MANY,
+       CLASS cac ONE
+;
+
+
+
+AGGREGATION 
+CONTAINER 
+       CLASS cac2 ONE
+PARTS
+       CLASS cac6 ONE_OR_MANY
+;
+
+

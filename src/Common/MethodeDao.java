@@ -2,6 +2,7 @@ package Common;
 
 import java.util.ArrayList;
 
+
 /**
  * classe qui contient les informations relatif aux methodes d'une classe 
  * */

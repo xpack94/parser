@@ -1,0 +1,32 @@
+MODEL Test
+CLASS noc2 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : etc3, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+;  
+CLASS noc3 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS noc4 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+
+
+
+GENERALIZATION noc3
+	SUBCLASSES noc2,noc4
+;
+
+
+
+

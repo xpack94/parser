@@ -1,0 +1,53 @@
+MODEL Test
+CLASS noa 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS noa2 
+ATTRIBUTES
+OPERATIONS 
+	test() : void
+;  
+CLASS noa3 
+ATTRIBUTES
+	test2() : Integer
+OPERATIONS 
+	
+	
+; 
+
+
+CLASS noa4 
+ATTRIBUTES
+	test : Double
+OPERATIONS 
+	test() : void
+	
+; 
+CLASS noa5
+ATTRIBUTES
+	one : Integer
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	
+;
+CLASS noa6
+ATTRIBUTES
+	two : Integer
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	
+;
+
+GENERALIZATION noa3
+	SUBCLASSES noa2 , noa4
+;
+
+GENERALIZATION noa4
+	SUBCLASSES noa6
+;
+

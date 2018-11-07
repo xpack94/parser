@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.xml.crypto.Data;
 
+
 import controller.FrameFactory;
 
 /**
@@ -108,34 +109,37 @@ public class Metrics {
 	
 
 	/**
-	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Ana 
+	 * @param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Nod 
 	 * @return float qui correspond au resultat du calcule 
 	 * 
-	 * cette methode fait le calcule de la metrique ana 
+	 * cette methode fait le calcule de la metrique Nod 
 	 * 
 	 * 
 	 * */
-	private float calculateNod(String relatedClass) {
+	public float calculateNod(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		int nod=0;
+		float nodSub=0;
 		if(classToCalculateFor!=null){
 			//on calcule le nombre de classe directes et indirectes
-			for(ClassDao subClass:classToCalculateFor.getSubClasses()){
 				if(classToCalculateFor.getSubClasses().size()==0){
 					return 0;
 				}else{
-					return classToCalculateFor.getSubClasses().size()+this.calculateNod(subClass.getName());
+					nod=classToCalculateFor.getSubClasses().size();
+					for(ClassDao subClass:classToCalculateFor.getSubClasses()){
+						nodSub+= this.calculateNod(subClass.getName());
+					}
 				}
-			}	
 		}
 		
-		return 0;
+		return nod+nodSub;
 	}
 	
 	/**
 	 *@param relatedClass qui correspond a la  classe pour laquelle on veut calculer la metrique Noc
 	 * @return float qui correspond au resultat du calcule  
 	 * **/
-	private float calculateNoc(String relatedClass) {
+	public float calculateNoc(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		if(classToCalculateFor!=null){
 			// on calcule le NOC de la classe choisit
@@ -148,11 +152,19 @@ public class Metrics {
 	 * @return float qui correspond au resultat du calcule 
 	 * cette methode fait le calcule de la metrique cid
 	 * **/
-	private float calculateCld(String relatedClass) {
+	public float calculateCld(String relatedClass) {
 		return this.cidCalculator(relatedClass,0,0);
 	}
 	
-	private int cidCalculator(String relatedClass,int count,int max){
+	/**
+	 * @param relatedClass qui correspond a la classe pour laquelle on fait le calcule 
+	 * @param max qui correspond a la valeur maximal actuel 
+	 * 
+	 * cette methode recursive fait le calcule de la metrique cid et donc elle travers l'arbre des sous classes de chaque classe 
+	 * et compte le chemin maximal a une feuille
+	 * 
+	 * **/
+	public int cidCalculator(String relatedClass,int count,int max){
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int cid=count;
 		int maximum=max;
@@ -173,7 +185,7 @@ public class Metrics {
 	 * cette methode fait le calcule de la metrique Dit 
 	 * 
 	 * **/
-	private float calculateDit(String relatedClass) {
+	public float calculateDit(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int dit=0;
 		if(classToCalculateFor!=null){
@@ -193,7 +205,7 @@ public class Metrics {
 	 * cette methode fait le calcule de la metrique Cac 
 	 * 
 	 * **/
-	private float calculateCac(String relatedClass) {
+	public float calculateCac(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int cac=0;
 		if(classToCalculateFor!=null){
@@ -230,7 +242,7 @@ public class Metrics {
 	 * cette methode fait le calcule de la metrique Etc 
 	 * 
 	 * */
-	private float calculateEtc(String relatedClass) {
+	public float calculateEtc(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int etc=0;
 		if(classToCalculateFor!=null){
@@ -262,22 +274,20 @@ public class Metrics {
 	 * 
 	 * 
 	 * **/
-	private float calculateItc(String relatedClass) {
-		List<String> primitiveTypes=new ArrayList<String>(Arrays.asList("integer","int","float","double","char","byte","short",
-				"long","string","boolean","bool"));
+	public float calculateItc(String relatedClass) {
+		
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int itc=0;
 		if(classToCalculateFor!=null){
 			for(MethodeDao methode:classToCalculateFor.getMethodes()){
 				for(AttributeDao attr:methode.getParameters()){
-					if(primitiveTypes.indexOf(attr.getAttributeType().toLowerCase())==-1){
-						//le type trouvé n'est pas un type primitive
-						if(DataApi.classes.get(attr.getAttributeType().trim())!=null){
-							//le type correspond a un type d'une classe du diagrame
-							itc++;
-						}
+					//le type trouvé n'est pas un type primitive
+					if(DataApi.classes.get(attr.getAttributeType().trim())!=null){
+						//le type correspond a un type d'une classe du diagrame
+						itc++;
 					}
 				}
+				
 				
 			}
 		}
@@ -293,7 +303,7 @@ public class Metrics {
 	 * 
 	 * 
 	 * **/
-	private float calculateNoa(String relatedClass) {
+	public float calculateNoa(String relatedClass) {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		if(classToCalculateFor!=null){
 			if(classToCalculateFor.getParentClass()!=null){
@@ -319,7 +329,6 @@ public class Metrics {
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
 		int numberOfAttrs=0;
 		if(classToCalculateFor!=null){
-			System.out.println(relatedClass);
 			for(MethodeDao methode:classToCalculateFor.getMethodes()){
 				numberOfAttrs+=methode.getParameters().size();
 			}
@@ -338,13 +347,14 @@ public class Metrics {
 	 * cette methode fait le calcule de la metrique Nom 
 	 * 
 	 * **/
-	private float calculateNom(String relatedClass){
+	public float calculateNom(String relatedClass){
 		ClassDao classToCalculateFor=DataApi.classes.get(relatedClass);
+		List<MethodeDao> methodes=new ArrayList<MethodeDao>();
 		int nom=0;
 		if(classToCalculateFor!=null){
 			nom+=classToCalculateFor.getMethodes().size();
 			while(classToCalculateFor.getParentClass()!=null){
-				List<MethodeDao> methodes=classToCalculateFor.getMethodes();
+				methodes.addAll(classToCalculateFor.getMethodes());
 				classToCalculateFor=classToCalculateFor.getParentClass();
 				int numberOfOverridenMethodes=this.doesOverride(classToCalculateFor.getMethodes(),methodes);
 				nom+=classToCalculateFor.getMethodes().size()-numberOfOverridenMethodes;
@@ -361,7 +371,8 @@ public class Metrics {
 	 * @return int qui correspond au nombre de methode qui sont redifinie localement dans une sous classe  
 	 * 
 	 * */
-	private int doesOverride(List<MethodeDao> methodes,List<MethodeDao> currentMethodes){
+	public int doesOverride(List<MethodeDao> methodes,List<MethodeDao> currentMethodes){
+	
 		int numberOfOverridenMethoes=0;
 		List<MethodeDao> methodeToUse=null;
 		List<MethodeDao> otherMethodes=null;
@@ -373,25 +384,29 @@ public class Metrics {
 			otherMethodes=currentMethodes;
 		}
 		for(int i =0;i<methodeToUse.size();i++){
-			if(otherMethodes.get(i).getMethodeName().equals(methodeToUse.get(i).getMethodeName())
-					&& currentMethodes.get(i).getReturnType().equals(methodes.get(i).getReturnType())){
-				List<AttributeDao> methodeParams=methodeToUse.get(i).getParameters();
-				List<AttributeDao> currentMethodeParams=otherMethodes.get(i).getParameters();
-				if(methodeParams.size()==currentMethodeParams.size()){
-					int j=0;
-					for(j=0;j<methodeParams.size();j++){
-						//on verifie si il ont le meme ordre et types des arguments
-						if(!methodeParams.get(j).getAttributeName().equals(currentMethodeParams.get(j).getAttributeName()) ||
-								!methodeParams.get(j).getAttributeType().equals(currentMethodeParams.get(j).getAttributeType())){
-							break;
+			for(int k =0;k<otherMethodes.size();k++){
+				if(otherMethodes.get(k).getMethodeName().equals(methodeToUse.get(i).getMethodeName())
+						&& otherMethodes.get(k).getReturnType().equals(methodeToUse.get(i).getReturnType())){
+					System.out.println(otherMethodes.get(k).getMethodeName()+" "+methodeToUse.get(i).getMethodeName());
+					List<AttributeDao> methodeParams=methodeToUse.get(i).getParameters();
+					List<AttributeDao> currentMethodeParams=otherMethodes.get(i).getParameters();
+					if(methodeParams.size()==currentMethodeParams.size()){
+						int j=0;
+						for(j=0;j<methodeParams.size();j++){
+							//on verifie si il ont le meme ordre et types des arguments
+							if(!methodeParams.get(j).getAttributeName().equals(currentMethodeParams.get(j).getAttributeName()) ||
+									!methodeParams.get(j).getAttributeType().equals(currentMethodeParams.get(j).getAttributeType())){
+								break;
+							}
+						}
+						if(j==methodeParams.size()){
+							numberOfOverridenMethoes++;
 						}
 					}
-					if(j==methodeParams.size()){
-						numberOfOverridenMethoes++;
-					}
+					
 				}
-				
 			}
+			
 		}//
 		return numberOfOverridenMethoes;
 	}

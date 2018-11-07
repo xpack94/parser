@@ -1,0 +1,49 @@
+MODEL Test
+CLASS dit 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : etc3, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS dit2 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : etc3, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+;  
+CLASS dit3 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS dit4 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS dit5 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+
+
+GENERALIZATION dit3
+	SUBCLASSES dit2,dit4
+;
+GENERALIZATION dit4
+	SUBCLASSES dit5
+;
+
+
+
+

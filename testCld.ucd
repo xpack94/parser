@@ -1,0 +1,68 @@
+MODEL Test
+CLASS cld 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : etc3, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : String, age : Int) : void
+;
+
+CLASS cld2 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : etc3, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+;  
+CLASS cld3 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS cld4 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS cld5 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS cld6 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+; 
+
+CLASS cld7 
+ATTRIBUTES
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : etc1, age : Int) : void
+OPERATIONS 	
+;
+
+GENERALIZATION cld3
+	SUBCLASSES cld2,cld4,cld
+;
+GENERALIZATION cld4
+	SUBCLASSES cld5
+;
+
+GENERALIZATION cld
+	SUBCLASSES cld6
+;
+
+GENERALIZATION cld6
+	SUBCLASSES cld7
+;
+
+
+

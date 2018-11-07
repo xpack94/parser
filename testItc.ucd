@@ -1,0 +1,27 @@
+MODEL Test
+CLASS itc 
+ATTRIBUTES
+OPERATIONS 
+	nbre_etudiants(classe : String, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : itc2, age : Int) : void
+;
+
+CLASS itc2 
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+	nbre_etudiants(classe : itc, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe : itc3, age : Int) : void
+;
+
+CLASS itc3
+ATTRIBUTES
+	test : Integer
+OPERATIONS 
+  nbre_etudiants(classe : Integer, annee : Int) : void ,
+	nbre_tables(classe : String, couleur : String) : void ,
+	nom_prof(classe :String, age : Int) : void
+
+
