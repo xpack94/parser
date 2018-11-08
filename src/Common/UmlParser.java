@@ -130,7 +130,7 @@ public class UmlParser {
 				int clIndex=attribute.indexOf(":");
 				String attributeName=attribute.substring(0,clIndex).replace(",","");
 				String attributeType=attribute.substring(clIndex+1,attribute.length()).replace(",","");
-				attributesList.add(new AttributeDao(attributeName, attributeType));
+				attributesList.add(new AttributeDao(attributeName.trim(), attributeType.trim()));
 				
 				
 			}
@@ -216,7 +216,7 @@ public class UmlParser {
 					List<String> parameters=Arrays.asList(parametersDescription.trim().split(","));
 				    methodeParameters=this.populateAttributes(parameters);
 				}
-				methodesList.add(new MethodeDao(methodeName, (ArrayList<AttributeDao>) methodeParameters, methodeType));
+				methodesList.add(new MethodeDao(methodeName.trim(), (ArrayList<AttributeDao>) methodeParameters, methodeType.trim()));
 			}
 		}
 		
@@ -434,7 +434,7 @@ public class UmlParser {
 	 * */
 	//methode qui verifie si la multiplicité est valide ou non
 	//retourne un boolean 
-	private boolean isValidMultiplcity(String multiplicity){
+	public boolean isValidMultiplcity(String multiplicity){
 		List<String> multiplicities=Arrays.asList("ONE","MANY","ONE_OR_MANY","OPTIONALLY_ONE","UNDEFINED");
 		if(multiplicities.indexOf(multiplicity)==-1){
 			return false;
@@ -449,7 +449,7 @@ public class UmlParser {
 	 * */
 	
 	//methode qui verifie si il existe des duplications d'attribut dans une meme classe 
-	private boolean checkDuplicates(List<AttributeDao> attributes){
+	public boolean checkDuplicates(List<AttributeDao> attributes){
 		HashMap<String, Boolean> attrList=new HashMap<String, Boolean>();
 		
 		for(AttributeDao attr:attributes){
@@ -467,7 +467,7 @@ public class UmlParser {
 	 * @return boolean qui represente true si il y'a une duplication d'une meme methode avec les meme signatures et false sinon
 	 * */
 	//methode qui verifie l'existance d'une diplication de methodes dans une meme classe
-	private boolean checkMethodeDuplicates(List<MethodeDao> methodes){
+	public boolean checkMethodeDuplicates(List<MethodeDao> methodes){
 		HashMap<String, Boolean> methodesList=new HashMap<String, Boolean>();
 		for (MethodeDao methode:methodes){
 			String m=methode.getMethodeName();
